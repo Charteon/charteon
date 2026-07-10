@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-10
+
 ### Added
 
 - **First-class colors.** New `colors` attribute (comma-separated palette,
