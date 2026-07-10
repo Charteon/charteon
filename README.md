@@ -49,7 +49,7 @@ series, category/value expressions.
 <dependency>
     <groupId>tech.charteon</groupId>
     <artifactId>charteon-core</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
@@ -277,6 +277,7 @@ JasperReports 6.x no longer exists in the 7.x line.
 
 | Charteon | JasperReports Library | Java | Notes |
 |---|---|---|---|
+| 0.3.x | 7.0.x (tested against 7.0.7) | 17+ (21+ for SVG rendering) | combo/dual-axis series, colors, number formatting |
 | 0.2.x | 7.0.x (tested against 7.0.7) | 25+ | all exporters listed above are available from 7.0.0 |
 | 0.1.x | 7.0.x (tested against 7.0.7) | 25+ | PDF/HTML/G2D/XLSX/DOCX/PPTX only |
 
