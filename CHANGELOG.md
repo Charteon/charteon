@@ -6,6 +6,15 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Title collisions fixed for all remaining full-canvas layouts.** A visual
+  audit of all 31 overview charts found the same title overlap the 0.3.1
+  sunburst fix addressed in four more layouts: polar coordinates (bar/line on
+  polar), circular graph, sankey and parallel axes now shrink or shift down
+  when a title/subtitle is present. Explicit geometry via `optionExpression`
+  still takes precedence.
+
 ## [0.3.1] - 2026-07-10
 
 ### Fixed
