@@ -1,0 +1,826 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Charteon overview report: demonstrates every chart type supported by the
+  Charteon component, grouped into Basic / Statistical / Hierarchy & Network /
+  Geo / Special / Escape hatch. Filled by CharteonComponentFillTest and
+  exported to PDF (vector) and HTML (interactive).
+-->
+<jasperReport name="charteon-overview" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a01">
+
+	<dataset name="sales" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a02">
+		<field name="month" class="java.lang.String"/>
+		<field name="product" class="java.lang.String"/>
+		<field name="amount" class="java.lang.Integer"/>
+	</dataset>
+
+	<dataset name="shares" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a03">
+		<field name="name" class="java.lang.String"/>
+		<field name="value" class="java.lang.Integer"/>
+	</dataset>
+
+	<dataset name="points" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a04">
+		<field name="cluster" class="java.lang.String"/>
+		<field name="x" class="java.lang.Double"/>
+		<field name="y" class="java.lang.Double"/>
+		<field name="size" class="java.lang.Double"/>
+	</dataset>
+
+	<dataset name="steps" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a05">
+		<field name="name" class="java.lang.String"/>
+		<field name="value" class="java.lang.Integer"/>
+	</dataset>
+
+	<dataset name="kpis" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a06">
+		<field name="name" class="java.lang.String"/>
+		<field name="value" class="java.lang.Double"/>
+	</dataset>
+
+	<dataset name="nodes" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a07">
+		<field name="name" class="java.lang.String"/>
+		<field name="parent" class="java.lang.String"/>
+		<field name="value" class="java.lang.Integer"/>
+	</dataset>
+
+	<dataset name="flows" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a08">
+		<field name="source" class="java.lang.String"/>
+		<field name="target" class="java.lang.String"/>
+		<field name="value" class="java.lang.Integer"/>
+	</dataset>
+
+	<dataset name="routes" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a09">
+		<field name="source" class="java.lang.String"/>
+		<field name="target" class="java.lang.String"/>
+		<field name="value" class="java.lang.Integer"/>
+		<field name="sx" class="java.lang.Double"/>
+		<field name="sy" class="java.lang.Double"/>
+		<field name="tx" class="java.lang.Double"/>
+		<field name="ty" class="java.lang.Double"/>
+	</dataset>
+
+	<dataset name="boxes" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a10">
+		<field name="category" class="java.lang.String"/>
+		<field name="min" class="java.lang.Double"/>
+		<field name="q1" class="java.lang.Double"/>
+		<field name="median" class="java.lang.Double"/>
+		<field name="q3" class="java.lang.Double"/>
+		<field name="max" class="java.lang.Double"/>
+	</dataset>
+
+	<dataset name="ohlc" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a11">
+		<field name="day" class="java.lang.String"/>
+		<field name="open" class="java.lang.Double"/>
+		<field name="close" class="java.lang.Double"/>
+		<field name="low" class="java.lang.Double"/>
+		<field name="high" class="java.lang.Double"/>
+	</dataset>
+
+	<dataset name="heat" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a12">
+		<field name="day" class="java.lang.String"/>
+		<field name="slot" class="java.lang.String"/>
+		<field name="orders" class="java.lang.Integer"/>
+	</dataset>
+
+	<dataset name="geo" uuid="0e1c3a52-8a3f-4f24-9d2e-2f9f7c8b4a13">
+		<field name="country" class="java.lang.String"/>
+		<field name="value" class="java.lang.Integer"/>
+	</dataset>
+
+	<parameter name="salesRecords" class="java.util.Collection"/>
+	<parameter name="shareRecords" class="java.util.Collection"/>
+	<parameter name="pointRecords" class="java.util.Collection"/>
+	<parameter name="funnelRecords" class="java.util.Collection"/>
+	<parameter name="gaugeRecords" class="java.util.Collection"/>
+	<parameter name="nodeRecords" class="java.util.Collection"/>
+	<parameter name="flowRecords" class="java.util.Collection"/>
+	<parameter name="routeRecords" class="java.util.Collection"/>
+	<parameter name="boxRecords" class="java.util.Collection"/>
+	<parameter name="ohlcRecords" class="java.util.Collection"/>
+	<parameter name="heatRecords" class="java.util.Collection"/>
+	<parameter name="geoRecords" class="java.util.Collection"/>
+	<parameter name="customOption" class="java.lang.String"/>
+	<parameter name="heatmapOption" class="java.lang.String"/>
+
+	<title height="80">
+		<element kind="staticText" uuid="1e000000-0000-0000-0000-000000000001" x="0" y="0" width="535" height="30" fontSize="20.0" bold="true" hTextAlign="Center">
+			<text><![CDATA[Charteon Chart Overview]]></text>
+		</element>
+		<element kind="staticText" uuid="1e000000-0000-0000-0000-000000000002" x="0" y="34" width="535" height="40" fontSize="10.0" hTextAlign="Center">
+			<text><![CDATA[Every Apache ECharts core series type, rendered by the Charteon component. In the PDF export all charts are true vector graphics; in the HTML export they are fully interactive.]]></text>
+		</element>
+	</title>
+
+	<detail>
+
+		<!-- ===================== A. BASIC ===================== -->
+		<band height="40">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000901" x="0" y="0" width="535" height="36" fontSize="16.0" bold="true">
+				<text><![CDATA[A. Basic charts]]></text>
+			</element>
+		</band>
+
+		<!-- 1. Bar -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000101" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[1. Bar (chartType="bar" showValues="true") — one series per product, value labels on the bars]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000000102" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="bar" showValues="true">
+					<titleExpression><![CDATA["Monthly Sales by Product"]]></titleExpression>
+					<subtitleExpression><![CDATA["units sold"]]></subtitleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000000103" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 2. Stacked bar -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000201" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[2. Stacked bar (chartType="bar" stacked="true") — the stack variant is a property, not a separate type]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000000202" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="bar" stacked="true">
+					<titleExpression><![CDATA["Monthly Sales (stacked)"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000000203" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 3. Horizontal bar -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000301" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[3. Horizontal bar (chartType="bar" horizontal="true") — category axis on the left]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000000302" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="bar" horizontal="true">
+					<titleExpression><![CDATA["Monthly Sales (horizontal)"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000000303" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 4. Line -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000401" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[4. Line (chartType="line") — trend view of the same sales dataset]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000000402" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="line">
+					<titleExpression><![CDATA["Monthly Sales Trend"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000000403" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 5. Smooth area line -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000501" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[5. Area (chartType="line" filled="true" smooth="true") — smoothed line with filled area]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000000502" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="line" filled="true" smooth="true">
+					<titleExpression><![CDATA["Monthly Sales (smoothed area)"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000000503" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 6. Step line -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000601" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[6. Step line (chartType="line" step="middle") — discrete level changes]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000000602" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="line" step="middle">
+					<titleExpression><![CDATA["Monthly Sales (step)"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000000603" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 7. Pie -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000701" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[7. Pie (chartType="pie") — categories become slices]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000000702" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="pie">
+					<titleExpression><![CDATA["Revenue Share by Product"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000000703" subDataset="shares">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{shareRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA["Revenue"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{name}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{value}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 8. Doughnut -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000801" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[8. Doughnut (chartType="pie" innerRadius="45%") — the ring variant is just a pie property]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000000802" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="pie" innerRadius="45%">
+					<titleExpression><![CDATA["Revenue Share (doughnut)"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000000803" subDataset="shares">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{shareRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA["Revenue"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{name}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{value}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 9. Rose pie -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000001901" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[9. Nightingale rose (chartType="pie" roseType="area") — slice radius encodes the value]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000001902" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="pie" roseType="area" innerRadius="20%">
+					<titleExpression><![CDATA["Revenue Share (rose)"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000001903" subDataset="shares">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{shareRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA["Revenue"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{name}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{value}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 10. Polar bar -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002001" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[10. Polar bar (chartType="bar" polar="true") — bars on polar coordinates]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002002" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="bar" polar="true" stacked="true">
+					<titleExpression><![CDATA["Monthly Sales (polar)"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002003" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 11. Scatter -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002101" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[11. Scatter (chartType="scatter") — xyDataset with x/y value expressions]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002102" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="scatter">
+					<titleExpression><![CDATA["Point Clusters"]]></titleExpression>
+					<xyDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002103" subDataset="points">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{pointRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{cluster}]]></seriesExpression>
+							<xValueExpression><![CDATA[$F{x}]]></xValueExpression>
+							<yValueExpression><![CDATA[$F{y}]]></yValueExpression>
+						</series>
+					</xyDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 12. Bubble -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002201" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[12. Bubble (chartType="scatter" + sizeExpression) — the third dimension drives the symbol size]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002202" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="scatter">
+					<titleExpression><![CDATA["Point Clusters (weighted)"]]></titleExpression>
+					<xyDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002203" subDataset="points">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{pointRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{cluster}]]></seriesExpression>
+							<xValueExpression><![CDATA[$F{x}]]></xValueExpression>
+							<yValueExpression><![CDATA[$F{y}]]></yValueExpression>
+							<sizeExpression><![CDATA[$F{size}]]></sizeExpression>
+						</series>
+					</xyDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 13. Effect scatter -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002301" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[13. Effect scatter (chartType="effectScatter") — ripple highlight in HTML, static points in PDF]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002302" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="effectScatter">
+					<titleExpression><![CDATA["Highlighted Points"]]></titleExpression>
+					<xyDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002303" subDataset="points">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{pointRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{cluster}]]></seriesExpression>
+							<xValueExpression><![CDATA[$F{x}]]></xValueExpression>
+							<yValueExpression><![CDATA[$F{y}]]></yValueExpression>
+						</series>
+					</xyDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- ===================== B. STATISTICAL ===================== -->
+		<band height="40">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000902" x="0" y="0" width="535" height="36" fontSize="16.0" bold="true">
+				<text><![CDATA[B. Statistical charts]]></text>
+			</element>
+		</band>
+
+		<!-- 14. Boxplot -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002401" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[14. Boxplot (chartType="boxplot") — boxplotDataset with the five-number summary per category]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002402" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="boxplot">
+					<titleExpression><![CDATA["Daily Order Value Distribution"]]></titleExpression>
+					<boxplotDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002403" subDataset="boxes">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{boxRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<categoryExpression><![CDATA[$F{category}]]></categoryExpression>
+						<minExpression><![CDATA[$F{min}]]></minExpression>
+						<q1Expression><![CDATA[$F{q1}]]></q1Expression>
+						<medianExpression><![CDATA[$F{median}]]></medianExpression>
+						<q3Expression><![CDATA[$F{q3}]]></q3Expression>
+						<maxExpression><![CDATA[$F{max}]]></maxExpression>
+					</boxplotDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 15. Candlestick -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002501" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[15. Candlestick (chartType="candlestick") — candlestickDataset with open/close/low/high per category]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002502" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="candlestick">
+					<titleExpression><![CDATA["Share Price (OHLC)"]]></titleExpression>
+					<candlestickDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002503" subDataset="ohlc">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{ohlcRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<categoryExpression><![CDATA[$F{day}]]></categoryExpression>
+						<openExpression><![CDATA[$F{open}]]></openExpression>
+						<closeExpression><![CDATA[$F{close}]]></closeExpression>
+						<lowExpression><![CDATA[$F{low}]]></lowExpression>
+						<highExpression><![CDATA[$F{high}]]></highExpression>
+					</candlestickDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 16. Heatmap (typed) -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002601" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[16. Heatmap (chartType="heatmap") — categories on the x axis, series names on the y axis]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002602" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="heatmap">
+					<titleExpression><![CDATA["Orders per Day and Time Slot"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002603" subDataset="heat">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{heatRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{day}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{slot}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{orders}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 17. Radar -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002701" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[17. Radar (chartType="radar") — categories become indicators, one polygon per series]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002702" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="radar">
+					<titleExpression><![CDATA["Product Profile by Month"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002703" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 18. Parallel -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002801" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[18. Parallel coordinates (chartType="parallel") — categories become the parallel axes, one line per series]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002802" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="parallel">
+					<titleExpression><![CDATA["Product Metrics Across Months"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002803" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 19. Theme river -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000002901" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[19. Theme river (chartType="themeRiver") — streams per series along the category axis]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000002902" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="themeRiver">
+					<titleExpression><![CDATA["Sales Streams"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000002903" subDataset="sales">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- ===================== C. HIERARCHY & NETWORK ===================== -->
+		<band height="40">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000903" x="0" y="0" width="535" height="36" fontSize="16.0" bold="true">
+				<text><![CDATA[C. Hierarchy & network charts]]></text>
+			</element>
+		</band>
+
+		<!-- 20. Tree -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003001" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[20. Tree (chartType="tree") — hierarchyDataset with name/parent/value expressions]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003002" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="tree">
+					<titleExpression><![CDATA["Product Taxonomy"]]></titleExpression>
+					<hierarchyDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003003" subDataset="nodes">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{nodeRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<nameExpression><![CDATA[$F{name}]]></nameExpression>
+						<parentExpression><![CDATA[$F{parent}]]></parentExpression>
+						<valueExpression><![CDATA[$F{value}]]></valueExpression>
+					</hierarchyDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 21. Treemap -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003101" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[21. Treemap (chartType="treemap") — same hierarchy data, area encodes the value]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003102" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="treemap">
+					<titleExpression><![CDATA["Revenue by Product Group"]]></titleExpression>
+					<hierarchyDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003103" subDataset="nodes">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{nodeRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<nameExpression><![CDATA[$F{name}]]></nameExpression>
+						<parentExpression><![CDATA[$F{parent}]]></parentExpression>
+						<valueExpression><![CDATA[$F{value}]]></valueExpression>
+					</hierarchyDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 22. Sunburst -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003201" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[22. Sunburst (chartType="sunburst") — same hierarchy data as concentric rings]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003202" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="sunburst">
+					<titleExpression><![CDATA["Revenue by Product Group (sunburst)"]]></titleExpression>
+					<hierarchyDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003203" subDataset="nodes">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{nodeRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<nameExpression><![CDATA[$F{name}]]></nameExpression>
+						<parentExpression><![CDATA[$F{parent}]]></parentExpression>
+						<valueExpression><![CDATA[$F{value}]]></valueExpression>
+					</hierarchyDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 23. Graph -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003301" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[23. Graph (chartType="graph") — relationDataset edges; circular layout renders identically in PDF and HTML]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003302" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="graph">
+					<titleExpression><![CDATA["Channel Network"]]></titleExpression>
+					<relationDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003303" subDataset="flows">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{flowRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<sourceExpression><![CDATA[$F{source}]]></sourceExpression>
+						<targetExpression><![CDATA[$F{target}]]></targetExpression>
+						<valueExpression><![CDATA[$F{value}]]></valueExpression>
+					</relationDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 24. Sankey -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003401" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[24. Sankey (chartType="sankey") — same relation data as weighted flows]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003402" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="sankey">
+					<titleExpression><![CDATA["Conversion Flows"]]></titleExpression>
+					<relationDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003403" subDataset="flows">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{flowRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<sourceExpression><![CDATA[$F{source}]]></sourceExpression>
+						<targetExpression><![CDATA[$F{target}]]></targetExpression>
+						<valueExpression><![CDATA[$F{value}]]></valueExpression>
+					</relationDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 25. Lines -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003501" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[25. Lines (chartType="lines") — connections with start/end coordinate expressions]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003502" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="lines">
+					<titleExpression><![CDATA["Delivery Routes"]]></titleExpression>
+					<relationDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003503" subDataset="routes">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{routeRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<sourceExpression><![CDATA[$F{source}]]></sourceExpression>
+						<targetExpression><![CDATA[$F{target}]]></targetExpression>
+						<valueExpression><![CDATA[$F{value}]]></valueExpression>
+						<sourceXExpression><![CDATA[$F{sx}]]></sourceXExpression>
+						<sourceYExpression><![CDATA[$F{sy}]]></sourceYExpression>
+						<targetXExpression><![CDATA[$F{tx}]]></targetXExpression>
+						<targetYExpression><![CDATA[$F{ty}]]></targetYExpression>
+					</relationDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- ===================== D. GEO ===================== -->
+		<band height="40">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000904" x="0" y="0" width="535" height="36" fontSize="16.0" bold="true">
+				<text><![CDATA[D. Geo charts]]></text>
+			</element>
+		</band>
+
+		<!-- 26. Map -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003601" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[26. Map (chartType="map") — choropleth on the bundled world map; categories are region names]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003602" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="map">
+					<titleExpression><![CDATA["Revenue by Country"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003603" subDataset="geo">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{geoRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA["Revenue"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{country}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{value}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- ===================== E. SPECIAL ===================== -->
+		<band height="40">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000905" x="0" y="0" width="535" height="36" fontSize="16.0" bold="true">
+				<text><![CDATA[E. Special charts]]></text>
+			</element>
+		</band>
+
+		<!-- 27. Gauge -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003701" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[27. Gauge (chartType="gauge") — the first series value drives the needle]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003702" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="gauge">
+					<titleExpression><![CDATA["Capacity Utilization (%)"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003703" subDataset="kpis">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{gaugeRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA["KPI"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{name}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{value}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 28. Funnel -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003801" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[28. Funnel (chartType="funnel") — conversion pipeline from top to bottom]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003802" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="funnel">
+					<titleExpression><![CDATA["Conversion Funnel"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003803" subDataset="steps">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{funnelRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA["Conversion"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{name}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{value}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 29. Pictorial bar -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000003901" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[29. Pictorial bar (chartType="pictorialBar") — bars built from repeated symbols]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000003902" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="pictorialBar" symbol="circle">
+					<titleExpression><![CDATA["Revenue by Product (pictorial)"]]></titleExpression>
+					<categoryDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000003903" subDataset="shares">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{shareRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA["Revenue"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{name}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{value}]]></valueExpression>
+						</series>
+					</categoryDataset>
+				</component>
+			</element>
+		</band>
+
+		<!-- 30. Custom -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000004001" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[30. Custom (chartType="custom") — xyDataset data plus a renderItem callback ("js:function...") via optionExpression]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000004002" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="custom">
+					<titleExpression><![CDATA["Custom-Rendered Points"]]></titleExpression>
+					<xyDataset>
+						<datasetRun uuid="2e000000-0000-0000-0000-000000004003" subDataset="points">
+							<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{pointRecords})]]></dataSourceExpression>
+						</datasetRun>
+						<series>
+							<seriesExpression><![CDATA[$F{cluster}]]></seriesExpression>
+							<xValueExpression><![CDATA[$F{x}]]></xValueExpression>
+							<yValueExpression><![CDATA[$F{y}]]></yValueExpression>
+						</series>
+					</xyDataset>
+					<optionExpression><![CDATA[$P{customOption}]]></optionExpression>
+				</component>
+			</element>
+		</band>
+
+		<!-- ===================== F. RAW OPTION ESCAPE HATCH ===================== -->
+		<band height="40">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000000906" x="0" y="0" width="535" height="36" fontSize="16.0" bold="true">
+				<text><![CDATA[F. Raw option escape hatch]]></text>
+			</element>
+		</band>
+
+		<!-- 31. Raw option -->
+		<band height="345">
+			<element kind="staticText" uuid="2e000000-0000-0000-0000-000000004101" x="0" y="0" width="535" height="34" fontSize="12.0" bold="true">
+				<text><![CDATA[31. Raw option (optionExpression only) — any ECharts option JSON, here a hand-written heatmap]]></text>
+			</element>
+			<element kind="component" uuid="2e000000-0000-0000-0000-000000004102" x="0" y="40" width="535" height="300">
+				<component kind="chart" chartType="heatmap">
+					<titleExpression><![CDATA["Orders per Weekday (raw option)"]]></titleExpression>
+					<optionExpression><![CDATA[$P{heatmapOption}]]></optionExpression>
+				</component>
+			</element>
+		</band>
+
+	</detail>
+</jasperReport>

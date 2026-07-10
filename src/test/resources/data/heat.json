@@ -1,0 +1,17 @@
+[
+  {"day": "Mon", "slot": "Morning", "orders": 32},
+  {"day": "Mon", "slot": "Noon", "orders": 58},
+  {"day": "Mon", "slot": "Evening", "orders": 21},
+  {"day": "Tue", "slot": "Morning", "orders": 28},
+  {"day": "Tue", "slot": "Noon", "orders": 61},
+  {"day": "Tue", "slot": "Evening", "orders": 25},
+  {"day": "Wed", "slot": "Morning", "orders": 35},
+  {"day": "Wed", "slot": "Noon", "orders": 66},
+  {"day": "Wed", "slot": "Evening", "orders": 30},
+  {"day": "Thu", "slot": "Morning", "orders": 30},
+  {"day": "Thu", "slot": "Noon", "orders": 55},
+  {"day": "Thu", "slot": "Evening", "orders": 27},
+  {"day": "Fri", "slot": "Morning", "orders": 41},
+  {"day": "Fri", "slot": "Noon", "orders": 72},
+  {"day": "Fri", "slot": "Evening", "orders": 48}
+]

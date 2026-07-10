@@ -1,0 +1,5 @@
+{
+  "series": {
+    "renderItem": "js:function(params, api) { var c = api.coord([api.value(0), api.value(1)]); var s = 4 + (api.value(0) % 5) * 2; return { type: 'rect', shape: { x: c[0] - s / 2, y: c[1] - s / 2, width: s, height: s }, style: { fill: params.dataIndex % 2 === 0 ? '#5470c6' : '#91cc75' } }; }"
+  }
+}

@@ -1,0 +1,11 @@
+[
+  {"source": "Website", "target": "Product Page", "value": 620},
+  {"source": "Newsletter", "target": "Product Page", "value": 180},
+  {"source": "Social Media", "target": "Product Page", "value": 200},
+  {"source": "Product Page", "target": "Cart", "value": 320},
+  {"source": "Product Page", "target": "Bounced", "value": 680},
+  {"source": "Cart", "target": "Checkout", "value": 180},
+  {"source": "Cart", "target": "Bounced", "value": 140},
+  {"source": "Checkout", "target": "Purchase", "value": 120},
+  {"source": "Checkout", "target": "Bounced", "value": 60}
+]

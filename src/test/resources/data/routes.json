@@ -1,0 +1,7 @@
+[
+  {"source": "Warehouse A", "target": "Store 1", "value": 40, "sx": 2.0, "sy": 3.0, "tx": 8.0, "ty": 9.0},
+  {"source": "Warehouse A", "target": "Store 2", "value": 25, "sx": 2.0, "sy": 3.0, "tx": 12.0, "ty": 4.0},
+  {"source": "Warehouse B", "target": "Store 2", "value": 30, "sx": 14.0, "sy": 11.0, "tx": 12.0, "ty": 4.0},
+  {"source": "Warehouse B", "target": "Store 3", "value": 55, "sx": 14.0, "sy": 11.0, "tx": 6.0, "ty": 13.0},
+  {"source": "Warehouse A", "target": "Store 3", "value": 15, "sx": 2.0, "sy": 3.0, "tx": 6.0, "ty": 13.0}
+]

@@ -1,0 +1,13 @@
+[
+  {"name": "Beverages", "parent": null, "value": null},
+  {"name": "Coffee", "parent": "Beverages", "value": null},
+  {"name": "Espresso", "parent": "Coffee", "value": 730},
+  {"name": "Latte", "parent": "Coffee", "value": 825},
+  {"name": "Cappuccino", "parent": "Coffee", "value": 540},
+  {"name": "Tea", "parent": "Beverages", "value": null},
+  {"name": "Green Tea", "parent": "Tea", "value": 310},
+  {"name": "Black Tea", "parent": "Tea", "value": 260},
+  {"name": "Cold Drinks", "parent": "Beverages", "value": null},
+  {"name": "Iced Coffee", "parent": "Cold Drinks", "value": 420},
+  {"name": "Lemonade", "parent": "Cold Drinks", "value": 180}
+]

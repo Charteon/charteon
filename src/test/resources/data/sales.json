@@ -1,0 +1,14 @@
+[
+  {"month": "Jan", "product": "Espresso", "amount": 120},
+  {"month": "Jan", "product": "Latte", "amount": 95},
+  {"month": "Feb", "product": "Espresso", "amount": 200},
+  {"month": "Feb", "product": "Latte", "amount": 130},
+  {"month": "Mar", "product": "Espresso", "amount": 150},
+  {"month": "Mar", "product": "Latte", "amount": 170},
+  {"month": "Apr", "product": "Espresso", "amount": 80},
+  {"month": "Apr", "product": "Latte", "amount": 110},
+  {"month": "May", "product": "Espresso", "amount": 70},
+  {"month": "May", "product": "Latte", "amount": 140},
+  {"month": "Jun", "product": "Espresso", "amount": 110},
+  {"month": "Jun", "product": "Latte", "amount": 180}
+]

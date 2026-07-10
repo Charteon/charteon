@@ -1,0 +1,7 @@
+[
+  {"name": "Visits", "value": 1000},
+  {"name": "Product views", "value": 640},
+  {"name": "Added to cart", "value": 320},
+  {"name": "Checkout", "value": 180},
+  {"name": "Purchase", "value": 120}
+]
