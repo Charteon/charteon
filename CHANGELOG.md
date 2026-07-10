@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Sunburst no longer collides with the chart title.** A titled sunburst
+  filled 90% of the canvas from the exact center, so the top ring ran into the
+  title text. With a title/subtitle present the series is now shrunk and
+  lowered automatically (report output and design preview alike); an explicit
+  `radius`/`center` in `optionExpression` still takes precedence.
+
 ## [0.3.0] - 2026-07-10
 
 ### Added
