@@ -223,13 +223,28 @@ public final class EChartsOptionBuilder
 	}
 
 	/**
-	 * Full-canvas radial series (sunburst fills 90% of the shorter edge from
-	 * the exact center) would extend into a top-centered title; shrink and
-	 * lower them so the title keeps its own band. Applied before the rawOption
-	 * merge, so user-supplied radius/center still win.
+	 * Layouts that fill the canvas from the exact center or start right at the
+	 * top edge (sunburst, polar coordinates, circular graph, sankey, parallel
+	 * axes) would extend into a top-centered title; shrink or lower them so
+	 * the title keeps its own band. Applied before the rawOption merge, so
+	 * user-supplied geometry still wins.
 	 */
 	private static void clearTitleOverlap(ObjectNode option, boolean hasSubtitle)
 	{
+		String centerY = hasSubtitle ? "57%" : "55%";
+		if (option.get("polar") instanceof ObjectNode polar)
+		{
+			ArrayNode polarCenter = polar.putArray("center");
+			polarCenter.add("50%");
+			polarCenter.add(centerY);
+			polar.put("radius", hasSubtitle ? "58%" : "62%");
+		}
+		if (option.has("parallelAxis"))
+		{
+			// axis names render ~25px above the layout box; the box must sit
+			// below the title band plus that offset (default top is 60px)
+			option.putObject("parallel").put("top", hasSubtitle ? "30%" : "24%");
+		}
 		JsonNode series = option.get("series");
 		if (!(series instanceof ArrayNode seriesArray))
 		{
@@ -237,13 +252,35 @@ public final class EChartsOptionBuilder
 		}
 		for (JsonNode entry : seriesArray)
 		{
-			if (entry instanceof ObjectNode seriesNode
-				&& "sunburst".equals(seriesNode.path("type").asText()))
+			if (!(entry instanceof ObjectNode seriesNode))
 			{
-				seriesNode.put("radius", hasSubtitle ? "62%" : "68%");
-				ArrayNode center = seriesNode.putArray("center");
-				center.add("50%");
-				center.add(hasSubtitle ? "57%" : "55%");
+				continue;
+			}
+			switch (seriesNode.path("type").asText())
+			{
+				case "sunburst":
+				{
+					seriesNode.put("radius", hasSubtitle ? "62%" : "68%");
+					ArrayNode center = seriesNode.putArray("center");
+					center.add("50%");
+					center.add(centerY);
+					break;
+				}
+				case "graph":
+				{
+					ArrayNode center = seriesNode.putArray("center");
+					center.add("50%");
+					center.add(centerY);
+					seriesNode.put("zoom", hasSubtitle ? 0.8 : 0.85);
+					break;
+				}
+				case "sankey":
+				{
+					seriesNode.put("top", hasSubtitle ? "18%" : "14%");
+					break;
+				}
+				default:
+					break;
 			}
 		}
 	}
