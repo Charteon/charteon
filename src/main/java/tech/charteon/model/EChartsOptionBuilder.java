@@ -130,6 +130,10 @@ public final class EChartsOptionBuilder
 			}
 
 			addTitle(option, title, subtitle);
+			if (title != null || subtitle != null)
+			{
+				clearTitleOverlap(option, subtitle != null);
+			}
 			addLegend(option, settings.type(), component.getShowLegend());
 			addColorPalette(option, settings);
 
@@ -215,6 +219,32 @@ public final class EChartsOptionBuilder
 				titleNode.put("subtext", subtitle);
 			}
 			titleNode.put("left", "center");
+		}
+	}
+
+	/**
+	 * Full-canvas radial series (sunburst fills 90% of the shorter edge from
+	 * the exact center) would extend into a top-centered title; shrink and
+	 * lower them so the title keeps its own band. Applied before the rawOption
+	 * merge, so user-supplied radius/center still win.
+	 */
+	private static void clearTitleOverlap(ObjectNode option, boolean hasSubtitle)
+	{
+		JsonNode series = option.get("series");
+		if (!(series instanceof ArrayNode seriesArray))
+		{
+			return;
+		}
+		for (JsonNode entry : seriesArray)
+		{
+			if (entry instanceof ObjectNode seriesNode
+				&& "sunburst".equals(seriesNode.path("type").asText()))
+			{
+				seriesNode.put("radius", hasSubtitle ? "62%" : "68%");
+				ArrayNode center = seriesNode.putArray("center");
+				center.add("50%");
+				center.add(hasSubtitle ? "57%" : "55%");
+			}
 		}
 	}
 
