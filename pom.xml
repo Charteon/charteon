@@ -6,7 +6,7 @@
 
     <groupId>tech.charteon</groupId>
     <artifactId>charteon-core</artifactId>
-    <version>0.3.1</version>
+    <version>0.4.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Charteon Core</name>
