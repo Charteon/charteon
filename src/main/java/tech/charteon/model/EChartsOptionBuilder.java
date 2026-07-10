@@ -864,6 +864,8 @@ public final class EChartsOptionBuilder
 		ArrayNode seriesArray = option.putArray("series");
 		ObjectNode seriesNode = seriesArray.addObject();
 		seriesNode.put("type", "themeRiver");
+		ObjectNode label = seriesNode.putObject("label");
+		label.put("color", "#333");
 		ArrayNode dataArray = seriesNode.putArray("data");
 		for (Map.Entry<String, Map<String, Number>> series : data.getSeriesValues().entrySet())
 		{
@@ -1026,10 +1028,12 @@ public final class EChartsOptionBuilder
 				ObjectNode label = seriesNode.putObject("label");
 				label.put("position", "left");
 				label.put("verticalAlign", "middle");
+				label.put("color", "#333");
 				ObjectNode leaves = seriesNode.putObject("leaves");
 				ObjectNode leavesLabel = leaves.putObject("label");
 				leavesLabel.put("position", "right");
 				leavesLabel.put("verticalAlign", "middle");
+				leavesLabel.put("color", "#333");
 				break;
 			}
 			case TREEMAP:
@@ -1113,9 +1117,12 @@ public final class EChartsOptionBuilder
 				lineStyle.put("curveness", 0.5);
 				ObjectNode emphasis = seriesNode.putObject("emphasis");
 				emphasis.put("focus", "adjacency");
+				// SSR output inherits white as the text color; node labels sit
+				// on pale flows and vanish without an explicit dark color
+				ObjectNode label = seriesNode.putObject("label");
+				label.put("color", "#333");
 				if (settings.showValues())
 				{
-					ObjectNode label = seriesNode.putObject("label");
 					label.put("show", true);
 					label.put("formatter", "{b}: {c}");
 				}

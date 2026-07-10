@@ -1,4 +1,4 @@
-# Getting Started with Charteon
+﻿# Getting Started with Charteon
 
 This walkthrough takes you from an empty report to a filled PDF/HTML with a
 Charteon chart. It assumes basic JasperReports knowledge (JRXML, fill,
@@ -25,7 +25,7 @@ export).
     <dependency>
         <groupId>tech.charteon</groupId>
         <artifactId>charteon-core</artifactId>
-        <version>0.3.2</version>
+        <version>0.3.3</version>
     </dependency>
 </dependencies>
 ```
@@ -34,7 +34,7 @@ Nothing else: Charteon self-registers via the JasperReports extension
 mechanism when it is on the classpath.
 
 If you prefer to manage GraalJS/Batik versions yourself, exclude them and pin
-your own versions — or use the self-contained `all` classifier instead:
+your own versions â€” or use the self-contained `all` classifier instead:
 
 ```xml
 <dependency>
@@ -120,7 +120,7 @@ driven by any subdataset regardless of where the element sits:
 ```
 
 Tip: pass *collections* as parameters and wrap them in a fresh data source
-inside `dataSourceExpression` — a `JRDataSource` instance can only be consumed
+inside `dataSourceExpression` â€” a `JRDataSource` instance can only be consumed
 once, so sharing one across several charts fails.
 
 ## 5. Common options
@@ -129,14 +129,14 @@ once, so sharing one across several charts fails.
 |---|---|
 | `chartType` | one of the supported type names (see chart reference) |
 | `theme` | ECharts theme name (`dark` is bundled with ECharts) |
-| `showLegend` | force legend on/off; default: on when useful (multi-series, pie, …) |
-| `evaluationTime` / `evaluationGroup` | as for native charts (`Now`, `Report`, `Page`, `Group`, …) |
+| `showLegend` | force legend on/off; default: on when useful (multi-series, pie, â€¦) |
+| `evaluationTime` / `evaluationGroup` | as for native charts (`Now`, `Report`, `Page`, `Group`, â€¦) |
 | `titleExpression` / `subtitleExpression` | chart title/subtitle (any expression) |
 | `optionExpression` | raw ECharts option JSON, merged over the generated option |
 
 ## 6. Beyond category charts
 
-Every core ECharts series type has a matching declarative dataset — see the
+Every core ECharts series type has a matching declarative dataset â€” see the
 [chart reference](chart-reference.md) for all of them:
 
 - `xyDataset` (scatter, effectScatter, custom): x/y/size expressions;
@@ -153,7 +153,7 @@ bubble) are attributes of the base type, e.g.
 
 `chartType="map"` renders a choropleth over a GeoJSON map. The bundled
 `world` map works out of the box; the categories are region names
-("Germany", "United States of America", …). To use your own map:
+("Germany", "United States of America", â€¦). To use your own map:
 
 ```java
 CharteonMaps.register("europe", geoJsonString);   // or a classpath resource
@@ -171,7 +171,7 @@ option object as JSON:
 - **standalone** (no dataset): the option is used as-is;
 - **combined with a dataset**: the raw option is deep-merged over the
   generated one, so you can tweak any generated detail (axis formatting,
-  colors, label styles, …) without abandoning the declarative dataset. An
+  colors, label styles, â€¦) without abandoning the declarative dataset. An
   object under `series` applies to every generated series.
 
 A convenient pattern is to keep the JSON in a report parameter:
@@ -185,7 +185,7 @@ A convenient pattern is to keep the JSON in a report parameter:
 ```
 
 Functions: JSON cannot carry JavaScript functions directly, but any string
-value starting with `js:` is revived into a function in every export format —
+value starting with `js:` is revived into a function in every export format â€”
 that is how the `custom` series gets its `renderItem`, and how callback
 formatters work. For simple cases, prefer ECharts string template formatters
 (e.g. `"{b}: {c}"`).
