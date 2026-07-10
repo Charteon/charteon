@@ -6,6 +6,16 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-07-10
+
+### Fixed
+
+- **Sankey, tree and themeRiver labels are legible in report output.**
+  Server-side rendering inherits white as the text color, so the node/stream
+  labels of these types were white on pale fills (invisible for tree). They
+  now use an explicit dark label color in the report output, matching what
+  the design-time preview already did since 0.3.0.
+
 ## [0.3.2] - 2026-07-10
 
 ### Fixed
