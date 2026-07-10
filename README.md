@@ -9,6 +9,11 @@ Charteon adds a chart component to the JasperReports Library that renders with
 same JRXML mindset you already know from native chart elements: datasets,
 series, category/value expressions.
 
+<p align="center">
+  <img src="docs/img/hero-bar.png" alt="Bar chart with value labels, rendered by Charteon as vector graphics in a PDF export" width="640">
+</p>
+<p align="center"><sub>Straight from <code>target/test-output/charteon-overview.pdf</code> — every chart in the PDF export is a true vector graphic.</sub></p>
+
 > **Trademark disclaimer.** Charteon is an independent open-source project. It
 > is **not** affiliated with, endorsed by, or sponsored by Cloud Software
 > Group, Inc. (Jaspersoft®/JasperReports®) or the Apache Software Foundation
@@ -40,6 +45,21 @@ series, category/value expressions.
   `optionExpression` escape hatch remains for fine-tuning.
 - **Open license.** LGPLv3, matching the JasperReports Library itself. No
   license servers, no paid tiers.
+
+## Gallery
+
+A selection from the bundled 31-chart overview report
+([JRXML source](src/test/resources/reports/charteon-overview.jrxml)); run
+`./mvnw test` and open `target/test-output/charteon-overview.pdf` (vector) or
+`charteon-overview.html` (interactive) to see all 22 series types in every
+export format.
+
+| | | |
+|---|---|---|
+| ![Smoothed area chart](docs/img/chart-area.png) | ![Pie chart](docs/img/chart-pie.png) | ![Nightingale rose chart](docs/img/chart-rose.png) |
+| ![Boxplot](docs/img/chart-boxplot.png) | ![Candlestick chart](docs/img/chart-candlestick.png) | ![Heatmap](docs/img/chart-heatmap.png) |
+| ![Radar chart](docs/img/chart-radar.png) | ![Sunburst chart](docs/img/chart-sunburst.png) | ![Sankey diagram](docs/img/chart-sankey.png) |
+| ![World map choropleth](docs/img/chart-map.png) | ![Gauge](docs/img/chart-gauge.png) | |
 
 ## Quickstart
 
