@@ -29,7 +29,7 @@ jobs:
 
       - name: Deploy to GitHub Packages
         run: >
-          ./mvnw -B deploy -DskipTests
+          bash ./mvnw -B deploy -DskipTests
           -DaltDeploymentRepository=github::https://maven.pkg.github.com/${{ github.repository }}
         env:
           GITHUB_ACTOR: ${{ github.actor }}
