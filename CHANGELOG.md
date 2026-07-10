@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-07-10
+
 ### Fixed
 
 - **Text is now vertically centered in static exports.** ECharts emits SVG
