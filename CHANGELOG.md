@@ -6,6 +6,15 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Text is now vertically centered in static exports.** ECharts emits SVG
+  text anchored with `dominant-baseline="central"`, which Batik does not
+  implement — every label sat about half the x-height too high in
+  PDF/raster/preview output (most visible next to the legend swatches). The
+  SSR post-processing now emulates the central baseline with an explicit
+  `dy` shift. Interactive HTML output was always correct and is unchanged.
+
 ## [0.3.3] - 2026-07-10
 
 ### Fixed
