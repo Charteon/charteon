@@ -76,6 +76,11 @@
             // interactive use; Batik cannot parse style sheets in documents
             // without a base URI (as created by JasperReports), so strip it.
             svg = svg.replace(/<style[\s\S]*?<\/style>/g, '');
+            // Batik does not implement dominant-baseline="central" and falls
+            // back to the alphabetic baseline, which lifts every label by about
+            // half the x-height (most visible next to the legend swatches).
+            // Emulate the central baseline with an explicit dy shift.
+            svg = svg.replace(/dominant-baseline="central"/g, 'dy="0.35em"');
             // Ensure the root <svg> carries a viewBox so the chart scales
             // proportionally when drawn into a differently sized area (PDF /
             // image export and the designer canvas render at a reference size
