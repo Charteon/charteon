@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-07-10
+
 ### Fixed
 
 - **Title collisions fixed for all remaining full-canvas layouts.** A visual
