@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-07-10
+
 ### Fixed
 
 - **Sunburst no longer collides with the chart title.** A titled sunburst
