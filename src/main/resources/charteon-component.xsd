@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Charteon component schema - INFORMATIONAL ONLY.
+
+  JasperReports 7.x parses JRXML with a Jackson-based loader; component
+  content is deserialized directly into the component classes and no XSD
+  validation hook exists (unlike the namespace/XSD model of JasperReports
+  6.x). This schema documents the structure of the Charteon <component
+  kind="chart"> subtree for humans and IDE tooling. See
+  docs/architecture.md.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://charteon.tech/schema/charts"
+           xmlns:ce="http://charteon.tech/schema/charts"
+           elementFormDefault="qualified">
+
+	<xs:element name="component" type="ce:chartComponentType"/>
+
+	<xs:complexType name="chartComponentType">
+		<xs:sequence>
+			<xs:element name="titleExpression" type="xs:string" minOccurs="0"/>
+			<xs:element name="subtitleExpression" type="xs:string" minOccurs="0"/>
+			<xs:element name="categoryDataset" type="ce:categoryDatasetType" minOccurs="0"/>
+			<xs:element name="xyDataset" type="ce:xyDatasetType" minOccurs="0"/>
+			<xs:element name="optionExpression" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="kind" use="required" fixed="chart"/>
+		<xs:attribute name="chartType" type="ce:chartTypeEnum"/>
+		<xs:attribute name="theme" type="xs:string"/>
+		<xs:attribute name="showLegend" type="xs:boolean"/>
+		<xs:attribute name="evaluationTime" type="ce:evaluationTimeEnum"/>
+		<xs:attribute name="evaluationGroup" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="categoryDatasetType">
+		<xs:sequence>
+			<xs:element name="datasetRun" type="ce:datasetRunType" minOccurs="0"/>
+			<xs:element name="series" type="ce:categorySeriesType" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="resetType" type="xs:string"/>
+		<xs:attribute name="resetGroup" type="xs:string"/>
+		<xs:attribute name="incrementType" type="xs:string"/>
+		<xs:attribute name="incrementGroup" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="xyDatasetType">
+		<xs:sequence>
+			<xs:element name="datasetRun" type="ce:datasetRunType" minOccurs="0"/>
+			<xs:element name="series" type="ce:xySeriesType" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="resetType" type="xs:string"/>
+		<xs:attribute name="resetGroup" type="xs:string"/>
+		<xs:attribute name="incrementType" type="xs:string"/>
+		<xs:attribute name="incrementGroup" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="categorySeriesType">
+		<xs:sequence>
+			<xs:element name="seriesExpression" type="xs:string"/>
+			<xs:element name="categoryExpression" type="xs:string"/>
+			<xs:element name="valueExpression" type="xs:string"/>
+			<xs:element name="labelExpression" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="xySeriesType">
+		<xs:sequence>
+			<xs:element name="seriesExpression" type="xs:string"/>
+			<xs:element name="xValueExpression" type="xs:string"/>
+			<xs:element name="yValueExpression" type="xs:string"/>
+			<xs:element name="sizeExpression" type="xs:string" minOccurs="0"/>
+			<xs:element name="labelExpression" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="datasetRunType">
+		<xs:sequence>
+			<xs:element name="parametersMapExpression" type="xs:string" minOccurs="0"/>
+			<xs:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="expression" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="connectionExpression" type="xs:string" minOccurs="0"/>
+			<xs:element name="dataSourceExpression" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="subDataset" type="xs:string" use="required"/>
+		<xs:attribute name="uuid" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:simpleType name="chartTypeEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="bar"/>
+			<xs:enumeration value="stackedBar"/>
+			<xs:enumeration value="horizontalBar"/>
+			<xs:enumeration value="line"/>
+			<xs:enumeration value="area"/>
+			<xs:enumeration value="pie"/>
+			<xs:enumeration value="doughnut"/>
+			<xs:enumeration value="radar"/>
+			<xs:enumeration value="gauge"/>
+			<xs:enumeration value="funnel"/>
+			<xs:enumeration value="scatter"/>
+			<xs:enumeration value="bubble"/>
+			<xs:enumeration value="heatmap"/>
+			<xs:enumeration value="boxplot"/>
+			<xs:enumeration value="candlestick"/>
+			<xs:enumeration value="treemap"/>
+			<xs:enumeration value="sunburst"/>
+			<xs:enumeration value="sankey"/>
+			<xs:enumeration value="graph"/>
+			<xs:enumeration value="tree"/>
+			<xs:enumeration value="parallel"/>
+			<xs:enumeration value="themeRiver"/>
+			<xs:enumeration value="pictorialBar"/>
+			<xs:enumeration value="effectScatter"/>
+			<xs:enumeration value="lines"/>
+			<xs:enumeration value="custom"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="evaluationTimeEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Now"/>
+			<xs:enumeration value="Report"/>
+			<xs:enumeration value="Page"/>
+			<xs:enumeration value="Column"/>
+			<xs:enumeration value="Group"/>
+			<xs:enumeration value="Band"/>
+			<xs:enumeration value="Master"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

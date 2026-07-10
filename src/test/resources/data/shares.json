@@ -1,0 +1,7 @@
+[
+  {"name": "Espresso", "value": 730},
+  {"name": "Latte", "value": 825},
+  {"name": "Cappuccino", "value": 540},
+  {"name": "Flat White", "value": 310},
+  {"name": "Mocha", "value": 210}
+]

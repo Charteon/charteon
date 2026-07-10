@@ -1,0 +1,63 @@
+Charteon
+Copyright (C) 2026 The Charteon Authors.
+
+Charteon is licensed under the GNU Lesser General Public License, version 3
+(see the LICENSE file; the LGPLv3 incorporates the GNU GPL version 3, see the
+COPYING file).
+
+================================================================================
+Trademark notice
+================================================================================
+
+"Charteon" is an independent project name. Charteon is not affiliated with,
+endorsed by, or sponsored by:
+
+  - Cloud Software Group, Inc. or its Jaspersoft division. "JasperReports" and
+    "Jaspersoft" are trademarks of Cloud Software Group, Inc. They are used in
+    this project's documentation only descriptively, to state compatibility.
+  - The Apache Software Foundation. "Apache", "Apache ECharts" and "Apache
+    Batik" are trademarks of The Apache Software Foundation. They are used
+    only descriptively, to attribute the bundled software.
+
+================================================================================
+Bundled and referenced third-party software
+================================================================================
+
+Apache ECharts
+  This product bundles Apache ECharts (echarts.min.js), developed at
+  The Apache Software Foundation (https://echarts.apache.org/).
+  Licensed under the Apache License, Version 2.0
+  (https://www.apache.org/licenses/LICENSE-2.0).
+
+GraalVM JavaScript (GraalJS) and Truffle, Community Edition
+  This product depends on (and, in the "all" artifact, bundles) the community
+  editions of GraalVM JavaScript and the Truffle framework, developed by
+  Oracle (https://www.graalvm.org/).
+  Licensed under the Universal Permissive License (UPL), Version 1.0
+  (https://oss.oracle.com/licenses/upl/). Note: the Oracle GraalVM
+  ("org.graalvm.polyglot:js") distribution under the GraalVM Free Terms and
+  Conditions (GFTC) is intentionally NOT used; Charteon depends on
+  "org.graalvm.polyglot:js-community" only.
+
+Apache Batik
+  This product depends on (and, in the "all" artifact, bundles) Apache Batik,
+  developed at The Apache Software Foundation
+  (https://xmlgraphics.apache.org/batik/).
+  Licensed under the Apache License, Version 2.0.
+
+Natural Earth
+  This product bundles a world map GeoJSON (tech/charteon/maps/world.geo.json)
+  derived from Natural Earth 1:110m Admin 0 - Countries
+  (https://www.naturalearthdata.com/). Natural Earth is in the public domain;
+  no permission is needed to use it. Country names and boundary
+  representations follow the Natural Earth source and do not express any
+  opinion of the Charteon project concerning the legal status of any country
+  or territory.
+
+JasperReports Library
+  This product is compiled against, and runs as an extension of, the
+  JasperReports Library (https://github.com/TIBCOSoftware/jasperreports),
+  Copyright (C) 2001 - 2026 Cloud Software Group, Inc., licensed under the
+  GNU Lesser General Public License, version 3. JasperReports is NOT bundled
+  in any Charteon artifact; it is a provided-scope dependency supplied by the
+  user's application.

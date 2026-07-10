@@ -1,0 +1,7 @@
+[
+  {"category": "Mon", "min": 12.0, "q1": 18.0, "median": 24.0, "q3": 31.0, "max": 42.0},
+  {"category": "Tue", "min": 10.0, "q1": 16.0, "median": 21.0, "q3": 27.0, "max": 38.0},
+  {"category": "Wed", "min": 14.0, "q1": 20.0, "median": 26.0, "q3": 34.0, "max": 45.0},
+  {"category": "Thu", "min": 11.0, "q1": 17.0, "median": 23.0, "q3": 30.0, "max": 41.0},
+  {"category": "Fri", "min": 16.0, "q1": 24.0, "median": 30.0, "q3": 38.0, "max": 52.0}
+]

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>tech.charteon</groupId>
+    <artifactId>charteon-core</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>Charteon Core</name>
+    <description>
+        Modern, interactive charts for JasperReports, powered by Apache ECharts.
+        Charteon is an independent open-source project and is not affiliated with, endorsed by,
+        or sponsored by Cloud Software Group, Inc. (Jaspersoft/JasperReports) or the
+        Apache Software Foundation (Apache ECharts).
+    </description>
+    <url>https://github.com/charteon/charteon</url>
+    <inceptionYear>2026</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License, Version 3</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/charteon/charteon.git</connection>
+        <developerConnection>scm:git:git@github.com:charteon/charteon.git</developerConnection>
+        <url>https://github.com/charteon/charteon</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/charteon/charteon/issues</url>
+    </issueManagement>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 17 statt 25: Bytecode bleibt in aelteren JVMs ladbar (z. B. Jaspersoft
+             Studio mit gebuendelter JRE, fuer das charteon-studio-Plugin); GraalJS
+             braucht zur LAUFZEIT weiterhin JDK >= 21 (dokumentiert). Tests laufen
+             unveraendert auf der lokalen JDK 25. -->
+        <maven.compiler.release>17</maven.compiler.release>
+
+        <jasperreports.version>7.0.7</jasperreports.version>
+        <graaljs.version>25.1.3</graaljs.version>
+        <batik.version>1.19</batik.version>
+
+        <junit.version>5.11.4</junit.version>
+        <pdfbox.version>3.0.7</pdfbox.version>
+    </properties>
+
+    <dependencies>
+
+        <!--
+            JasperReports is deliberately a *provided*-scope dependency:
+            Charteon must link against the JasperReports version that the end user already
+            has on the classpath. Shading or forcing a fixed JasperReports version would
+            create classpath conflicts and would make it impossible to use Charteon as a
+            drop-in extension of an existing installation. The same applies to the
+            jasperreports-pdf exporter artifact (only its GenericElementPdfHandler SPI is
+            compiled against).
+        -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>${jasperreports.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-pdf</artifactId>
+            <version>${jasperreports.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            GraalVM JavaScript, community edition (UPL-licensed - license-compatible with
+            LGPLv3 distribution; the "js" artifact without the -community suffix pulls the
+            Oracle GFTC-licensed runtime and is intentionally NOT used).
+            These are regular compile dependencies: the thin JAR resolves them transitively,
+            the "all" JAR bundles them.
+        -->
+        <dependency>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>polyglot</artifactId>
+            <version>${graaljs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graalvm.polyglot</groupId>
+            <artifactId>js-community</artifactId>
+            <version>${graaljs.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <!--
+            Batik is used directly by Charteon only for the raster fallback (SVG -> PNG for
+            XLSX/DOCX/PPTX exports). The SVG -> PDF vector path goes through JasperReports'
+            own Batik integration (renderers/RenderersCache), which resolves Batik from the
+            user's classpath.
+        -->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-transcoder</artifactId>
+            <version>${batik.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-codec</artifactId>
+            <version>${batik.version}</version>
+        </dependency>
+
+        <!-- ==================== test ==================== -->
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Report expression compiler (separate artifact since JasperReports 7) -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-jdt</artifactId>
+            <version>${jasperreports.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Consistent fonts for reproducible PDF output in tests -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-fonts</artifactId>
+            <version>${jasperreports.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Coarse PDF validity assertions -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+            </plugin>
+            <!--
+                Packaging strategy:
+                - The main artifact (charteon-core-x.y.z.jar) is the "thin" JAR: only Charteon
+                  classes and resources (incl. the bundled echarts.min.js). Dependencies
+                  (GraalJS, Batik) are resolved transitively via this POM. Use this if you
+                  want to control GraalJS/Batik versions yourself.
+                - The attached "all" artifact (classifier "all") additionally bundles GraalJS
+                  and Batik (but NEVER JasperReports itself, which stays provided).
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>all</shadedClassifierName>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <!-- The GraalVM/Truffle jars are multi-release jars
+                                     (they ship classes under META-INF/versions/). The
+                                     shade plugin keeps those class files but drops the
+                                     "Multi-Release: true" manifest attribute, so the JVM
+                                     ignores the versioned classes and Truffle refuses to
+                                     start ("Multi-Release classes are not configured
+                                     correctly"). Re-assert the attribute on the uber jar. -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Multi-Release>true</Multi-Release>
+                                    </manifestEntries>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                                    <addHeader>false</addHeader>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/versions/*/module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

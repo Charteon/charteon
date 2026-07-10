@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Charteon smoke test report (JasperReports 7.x dialect, for Jaspersoft Studio 7.x).
+
+  Self-contained: the chart data is built inline in the parameter default value
+  expressions, so you can simply open this report and hit *Preview* with the
+  default "One Empty Record" data adapter - no external data source needed.
+
+  Both charts sit in the <title> band, which always renders exactly once, so the
+  preview works regardless of the selected data adapter.
+-->
+<jasperReport name="charteon-smoke-test" pageWidth="595" pageHeight="842" columnWidth="535"
+              leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30"
+              uuid="c1000000-0000-0000-0000-000000000001">
+
+	<dataset name="sales" uuid="c1000000-0000-0000-0000-000000000002">
+		<field name="month" class="java.lang.String"/>
+		<field name="product" class="java.lang.String"/>
+		<field name="amount" class="java.lang.Integer"/>
+	</dataset>
+
+	<dataset name="shares" uuid="c1000000-0000-0000-0000-000000000003">
+		<field name="name" class="java.lang.String"/>
+		<field name="value" class="java.lang.Integer"/>
+	</dataset>
+
+	<parameter name="salesRecords" class="java.util.Collection">
+		<defaultValueExpression><![CDATA[java.util.Arrays.asList(
+			java.util.Map.of("month", "Jan", "product", "Espresso", "amount", Integer.valueOf(120)),
+			java.util.Map.of("month", "Feb", "product", "Espresso", "amount", Integer.valueOf(140)),
+			java.util.Map.of("month", "Mar", "product", "Espresso", "amount", Integer.valueOf(132)),
+			java.util.Map.of("month", "Jan", "product", "Latte", "amount", Integer.valueOf(90)),
+			java.util.Map.of("month", "Feb", "product", "Latte", "amount", Integer.valueOf(105)),
+			java.util.Map.of("month", "Mar", "product", "Latte", "amount", Integer.valueOf(98))
+		)]]></defaultValueExpression>
+	</parameter>
+
+	<parameter name="shareRecords" class="java.util.Collection">
+		<defaultValueExpression><![CDATA[java.util.Arrays.asList(
+			java.util.Map.of("name", "Espresso", "value", Integer.valueOf(392)),
+			java.util.Map.of("name", "Latte", "value", Integer.valueOf(293)),
+			java.util.Map.of("name", "Cappuccino", "value", Integer.valueOf(210)),
+			java.util.Map.of("name", "Tea", "value", Integer.valueOf(150))
+		)]]></defaultValueExpression>
+	</parameter>
+
+	<title height="720">
+		<element kind="staticText" uuid="c1000000-0000-0000-0000-000000000010"
+		         x="0" y="0" width="535" height="30" fontSize="18.0" bold="true">
+			<text><![CDATA[Charteon Smoke Test]]></text>
+		</element>
+
+		<!-- 1. Bar chart with value labels -->
+		<element kind="component" uuid="c1000000-0000-0000-0000-000000000011"
+		         x="0" y="40" width="535" height="300">
+			<component kind="chart" chartType="bar" showValues="true">
+				<titleExpression><![CDATA["Monthly Sales by Product"]]></titleExpression>
+				<subtitleExpression><![CDATA["units sold"]]></subtitleExpression>
+				<categoryDataset>
+					<datasetRun uuid="c1000000-0000-0000-0000-000000000012" subDataset="sales">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{salesRecords})]]></dataSourceExpression>
+					</datasetRun>
+					<series>
+						<seriesExpression><![CDATA[$F{product}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{month}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{amount}]]></valueExpression>
+					</series>
+				</categoryDataset>
+			</component>
+		</element>
+
+		<!-- 2. Doughnut (pie with inner radius) -->
+		<element kind="component" uuid="c1000000-0000-0000-0000-000000000013"
+		         x="0" y="360" width="535" height="300">
+			<component kind="chart" chartType="pie" innerRadius="45%" showValues="true" showLegend="true">
+				<titleExpression><![CDATA["Revenue Share by Product"]]></titleExpression>
+				<categoryDataset>
+					<datasetRun uuid="c1000000-0000-0000-0000-000000000014" subDataset="shares">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRMapCollectionDataSource($P{shareRecords})]]></dataSourceExpression>
+					</datasetRun>
+					<series>
+						<seriesExpression><![CDATA["Revenue"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{name}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{value}]]></valueExpression>
+					</series>
+				</categoryDataset>
+			</component>
+		</element>
+	</title>
+</jasperReport>
