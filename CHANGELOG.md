@@ -6,6 +6,15 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Dependency refresh.** JasperReports 7.0.7 -> 7.0.8, GraalJS/polyglot
+  25.1.3 -> 25.3.4.1, PDFBox (test only) 3.0.7 -> 3.0.8, JUnit Jupiter
+  5.11.4 -> 6.1.3. Build plugins: maven-compiler-plugin 3.15.0,
+  maven-shade-plugin 3.6.2. The shaded runtime JAR still carries
+  `Multi-Release: true`, which GraalVM/Truffle requires inside the
+  Jaspersoft Studio OSGi bundle.
+
 ## [0.3.4] - 2026-07-10
 
 ### Fixed

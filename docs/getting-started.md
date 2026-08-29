@@ -12,13 +12,13 @@ export).
     <dependency>
         <groupId>net.sf.jasperreports</groupId>
         <artifactId>jasperreports</artifactId>
-        <version>7.0.7</version>
+        <version>7.0.8</version>
     </dependency>
     <!-- for PDF export -->
     <dependency>
         <groupId>net.sf.jasperreports</groupId>
         <artifactId>jasperreports-pdf</artifactId>
-        <version>7.0.7</version>
+        <version>7.0.8</version>
     </dependency>
 
     <!-- Charteon -->
