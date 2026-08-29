@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-08-29
+
 ### Changed
 
 - **Dependency refresh.** JasperReports 7.0.7 -> 7.0.8, GraalJS/polyglot
