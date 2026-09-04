@@ -178,7 +178,10 @@ public class ChartFillComponent extends BaseFillComponent
 			boxplotDataset == null ? null : boxplotDataset.getData(),
 			candlestickDataset == null ? null : candlestickDataset.getData());
 
-		optionJson = EChartsOptionBuilder.buildOption(component, title, subtitle, data, rawOption);
+		// The report locale decides the number separators the component does
+		// not set itself, so the chart formats like the report around it.
+		optionJson = EChartsOptionBuilder.buildOption(
+			component, title, subtitle, data, rawOption, fillContext.getReportLocale());
 	}
 
 	private static String asString(Object value)

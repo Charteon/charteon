@@ -6,7 +6,31 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Charts have a default color palette.** Without `colors` and without a
+  `theme`, charts used the ECharts stock palette, which is tuned for screens:
+  five of its nine hues sit below a 3:1 contrast ratio against paper, its
+  yellow/green pair is barely separable even with full color vision, and its
+  orange/green pair collapses under protanopia. Reports get printed,
+  photocopied and archived in greyscale, so the default is now an eight-slot
+  palette that keeps a lightness spread and stays separable under simulated
+  color-vision deficiency. `colors` still wins, and a `theme` keeps its own
+  palette untouched.
+- **Number separators follow the report locale.** `groupingSeparator` /
+  `decimalSeparator` defaulted to `,` / `.` regardless of the report, so a
+  chart in a German report printed `1,234.56` while the text around it printed
+  `1.234,56`. They now default to the separators of the locale the report is
+  filled with; setting them explicitly still overrides that.
+
 ### Added
+
+- **`decal` attribute** — adds a texture per series (ECharts `aria.decal`) on
+  top of the palette color, so series identity survives black-and-white
+  printing and color-vision deficiency. Off by default, because it visibly
+  changes every existing chart. The accessibility layer itself (`aria.enabled`,
+  which puts a generated chart description into the exported SVG) is now always
+  on.
 
 - **License texts are now packaged into the JARs.** Both artifacts previously
   shipped without any license file, although they distribute third-party code:
