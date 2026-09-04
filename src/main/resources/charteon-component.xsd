@@ -29,6 +29,9 @@
 		<xs:attribute name="theme" type="xs:string"/>
 		<xs:attribute name="showLegend" type="xs:boolean"/>
 		<xs:attribute name="decal" type="xs:boolean"/>
+		<xs:attribute name="textColor" type="xs:string"/>
+		<xs:attribute name="fontName" type="xs:string"/>
+		<xs:attribute name="fontSize" type="xs:float"/>
 		<xs:attribute name="evaluationTime" type="ce:evaluationTimeEnum"/>
 		<xs:attribute name="evaluationGroup" type="xs:string"/>
 	</xs:complexType>

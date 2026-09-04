@@ -53,6 +53,13 @@ public final class EChartsOptionBuilder
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	/**
+	 * The label colour used where server-side rendering would otherwise inherit
+	 * white. Overridable per chart via the {@code textColor} attribute; the
+	 * literal used to be repeated at every one of those sites.
+	 */
+	private static final String DEFAULT_TEXT_COLOR = "#333";
+
+	/**
 	 * The default categorical palette, used when the report sets neither
 	 * {@code colors} nor a {@code theme}.
 	 *
@@ -108,8 +115,25 @@ public final class EChartsOptionBuilder
 		String colors,
 		boolean colorByCategory,
 		String theme,
-		boolean decal)
+		boolean decal,
+		String textColor,
+		String fontName,
+		Float fontSize)
 	{
+	}
+
+	/**
+	 * What the surrounding report contributes to the chart: its locale (number
+	 * separators) and the font of the chart element's style. Both are defaults
+	 * only - an explicit component attribute always wins.
+	 *
+	 * @param locale   the report locale, or {@code null} for the JVM default
+	 * @param fontName the element style's font name, or {@code null}
+	 * @param fontSize the element style's font size, or {@code null}
+	 */
+	public record ReportEnvironment(Locale locale, String fontName, Float fontSize)
+	{
+		public static final ReportEnvironment NONE = new ReportEnvironment(null, null, null);
 	}
 
 	private EChartsOptionBuilder()
@@ -123,17 +147,19 @@ public final class EChartsOptionBuilder
 		ChartData data,
 		String rawOptionJson)
 	{
-		return buildOption(component, title, subtitle, data, rawOptionJson, null);
+		return buildOption(component, title, subtitle, data, rawOptionJson,
+			ReportEnvironment.NONE);
 	}
 
 	/**
-	 * Builds the option for a report being filled with {@code locale}. The
+	 * Builds the option for a chart embedded in {@code environment}. The report
 	 * locale supplies the number separators the component does not set
 	 * explicitly, so a chart in a German report formats its axis labels and
-	 * tooltips as {@code 1.234,56} like the rest of the report, not as
-	 * {@code 1,234.56}.
+	 * tooltips as {@code 1.234,56} like the rest of the report; the element
+	 * style's font is inherited so the chart's text matches the report's text
+	 * instead of falling back to the ECharts default face.
 	 *
-	 * @param locale the report locale, or {@code null} for the JVM default
+	 * @param environment what the report contributes; never {@code null}
 	 */
 	public static String buildOption(
 		ChartComponent component,
@@ -141,12 +167,12 @@ public final class EChartsOptionBuilder
 		String subtitle,
 		ChartData data,
 		String rawOptionJson,
-		Locale locale)
+		ReportEnvironment environment)
 	{
 		try
 		{
 			ObjectNode option = MAPPER.createObjectNode();
-			Settings settings = normalize(component, locale);
+			Settings settings = normalize(component, environment);
 			if (data == null)
 			{
 				data = ChartData.EMPTY;
@@ -190,6 +216,7 @@ public final class EChartsOptionBuilder
 			}
 			addLegend(option, settings.type(), component.getShowLegend());
 			addColorPalette(option, settings);
+			addTextStyle(option, settings);
 			addAria(option, settings);
 
 			if (rawOptionJson != null && !rawOptionJson.isBlank())
@@ -216,10 +243,11 @@ public final class EChartsOptionBuilder
 	 * Resolves the pre-v2 variant type aliases into base type + implied
 	 * property and applies the component's variant properties.
 	 */
-	private static Settings normalize(ChartComponent component, Locale locale)
+	private static Settings normalize(ChartComponent component, ReportEnvironment environment)
 	{
 		ChartTypeEnum declared = component.getChartType();
 		ChartTypeEnum base = declared == null ? null : declared.getBaseType();
+		ReportEnvironment env = environment == null ? ReportEnvironment.NONE : environment;
 
 		boolean stacked = Boolean.TRUE.equals(component.getStacked())
 			|| declared == ChartTypeEnum.STACKED_BAR;
@@ -247,16 +275,21 @@ public final class EChartsOptionBuilder
 			component.getGraphLayout() == null ? "circular" : component.getGraphLayout(),
 			blankToNull(component.getValueFormat()),
 			component.getGroupingSeparator() == null
-				? localeGroupingSeparator(locale) : component.getGroupingSeparator(),
+				? localeGroupingSeparator(env.locale()) : component.getGroupingSeparator(),
 			component.getDecimalSeparator() == null
-				? localeDecimalSeparator(locale) : component.getDecimalSeparator(),
+				? localeDecimalSeparator(env.locale()) : component.getDecimalSeparator(),
 			blankToNull(component.getXAxisTitle()),
 			blankToNull(component.getYAxisTitle()),
 			blankToNull(component.getSecondaryAxisTitle()),
 			blankToNull(component.getColors()),
 			Boolean.TRUE.equals(component.getColorByCategory()),
 			blankToNull(component.getTheme()),
-			Boolean.TRUE.equals(component.getDecal()));
+			Boolean.TRUE.equals(component.getDecal()),
+			blankToNull(component.getTextColor()) == null
+				? DEFAULT_TEXT_COLOR : component.getTextColor().trim(),
+			blankToNull(component.getFontName()) == null
+				? env.fontName() : component.getFontName().trim(),
+			component.getFontSize() == null ? env.fontSize() : component.getFontSize());
 	}
 
 	private static String blankToNull(String value)
@@ -413,6 +446,39 @@ public final class EChartsOptionBuilder
 	}
 
 	/**
+	 * Applies the chart-wide text style: the label colour, and the font the
+	 * report element's style carries (or the {@code fontName}/{@code fontSize}
+	 * attributes, which win over it).
+	 *
+	 * <p>
+	 * Without this the chart drew its text in the ECharts default face while
+	 * the report around it used its own - visibly two typefaces in one page.
+	 * The colour is only written to the root when it differs from the default,
+	 * so an un-configured chart keeps the ECharts axis/legend greys it always
+	 * had and only the series labels are forced dark (which SSR requires).
+	 */
+	private static void addTextStyle(ObjectNode option, Settings settings)
+	{
+		ObjectNode textStyle = MAPPER.createObjectNode();
+		if (settings.fontName() != null)
+		{
+			textStyle.put("fontFamily", settings.fontName());
+		}
+		if (settings.fontSize() != null)
+		{
+			textStyle.put("fontSize", settings.fontSize());
+		}
+		if (!DEFAULT_TEXT_COLOR.equals(settings.textColor()))
+		{
+			textStyle.put("color", settings.textColor());
+		}
+		if (!textStyle.isEmpty())
+		{
+			option.set("textStyle", textStyle);
+		}
+	}
+
+	/**
 	 * Enables the ECharts accessibility layer: a generated description of the
 	 * chart (which ends up in the SVG and therefore in the exported document),
 	 * and - when {@code decal} is set - a texture per series.
@@ -469,7 +535,7 @@ public final class EChartsOptionBuilder
 				buildParallelOption(option, data);
 				break;
 			case THEME_RIVER:
-				buildThemeRiverOption(option, data);
+				buildThemeRiverOption(option, settings, data);
 				break;
 			case PICTORIAL_BAR:
 				buildPictorialBarOption(option, settings, data);
@@ -690,7 +756,7 @@ public final class EChartsOptionBuilder
 		{
 			label.put("formatter", settings.showValues() ? "{b}: {c}" : "{b}");
 		}
-		label.put("color", "#333");
+		label.put("color", settings.textColor());
 		seriesNode.putObject("labelLine").put("show", true);
 		ArrayNode dataArray = seriesNode.putArray("data");
 		if (firstSeries != null)
@@ -952,7 +1018,8 @@ public final class EChartsOptionBuilder
 	 * layout does not support a category axis, so the categories are mapped
 	 * to numeric indices and shown through a revived label formatter.
 	 */
-	private static void buildThemeRiverOption(ObjectNode option, CategoryChartData data)
+	private static void buildThemeRiverOption(
+		ObjectNode option, Settings settings, CategoryChartData data)
 	{
 		ObjectNode tooltip = option.putObject("tooltip");
 		tooltip.put("trigger", "axis");
@@ -975,7 +1042,7 @@ public final class EChartsOptionBuilder
 		ObjectNode seriesNode = seriesArray.addObject();
 		seriesNode.put("type", "themeRiver");
 		ObjectNode label = seriesNode.putObject("label");
-		label.put("color", "#333");
+		label.put("color", settings.textColor());
 		ArrayNode dataArray = seriesNode.putArray("data");
 		for (Map.Entry<String, Map<String, Number>> series : data.getSeriesValues().entrySet())
 		{
@@ -1081,7 +1148,7 @@ public final class EChartsOptionBuilder
 				label.put("position", "top");
 				// the y value; {@[1]} addresses the second value dimension
 				label.put("formatter", "{@[1]}");
-				label.put("color", "#333");
+				label.put("color", settings.textColor());
 			}
 
 			ArrayNode dataArray = seriesNode.putArray("data");
@@ -1138,12 +1205,12 @@ public final class EChartsOptionBuilder
 				ObjectNode label = seriesNode.putObject("label");
 				label.put("position", "left");
 				label.put("verticalAlign", "middle");
-				label.put("color", "#333");
+				label.put("color", settings.textColor());
 				ObjectNode leaves = seriesNode.putObject("leaves");
 				ObjectNode leavesLabel = leaves.putObject("label");
 				leavesLabel.put("position", "right");
 				leavesLabel.put("verticalAlign", "middle");
-				leavesLabel.put("color", "#333");
+				leavesLabel.put("color", settings.textColor());
 				break;
 			}
 			case TREEMAP:
@@ -1230,7 +1297,7 @@ public final class EChartsOptionBuilder
 				// SSR output inherits white as the text color; node labels sit
 				// on pale flows and vanish without an explicit dark color
 				ObjectNode label = seriesNode.putObject("label");
-				label.put("color", "#333");
+				label.put("color", settings.textColor());
 				if (settings.showValues())
 				{
 					label.put("show", true);
@@ -1439,7 +1506,7 @@ public final class EChartsOptionBuilder
 		label.put("position",
 			settings.stacked() ? "inside" : (settings.horizontal() ? "right" : "top"));
 		// outside labels inherit no usable color in SSR output; fix it
-		label.put("color", settings.stacked() ? "#fff" : "#333");
+		label.put("color", settings.stacked() ? "#fff" : settings.textColor());
 		String formatter = numberFormatterJs(settings);
 		if (formatter != null)
 		{

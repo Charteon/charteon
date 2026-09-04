@@ -46,11 +46,17 @@ public class OptionDefaultsTest
 
 	private static JsonNode option(ChartComponent component, Locale locale) throws Exception
 	{
+		return option(component, new EChartsOptionBuilder.ReportEnvironment(locale, null, null));
+	}
+
+	private static JsonNode option(
+		ChartComponent component, EChartsOptionBuilder.ReportEnvironment env) throws Exception
+	{
 		CategoryChartData category = new CategoryChartData();
 		category.addValue("Series 1", "A", 1234.5, null);
 		ChartData data = new ChartData(category, null, null, null, null, null);
 		return MAPPER.readTree(
-			EChartsOptionBuilder.buildOption(component, null, null, data, null, locale));
+			EChartsOptionBuilder.buildOption(component, null, null, data, null, env));
 	}
 
 	private static ChartComponent barComponent()
@@ -135,6 +141,52 @@ public class OptionDefaultsTest
 		component.setDecal(Boolean.TRUE);
 		assertTrue(option(component, Locale.GERMANY)
 			.get("aria").get("decal").get("show").asBoolean());
+	}
+
+	@Test
+	void inheritsTheReportFontAndKeepsTextStyleOutOfAnUnconfiguredChart() throws Exception
+	{
+		assertFalse(option(barComponent(), Locale.GERMANY).has("textStyle"),
+			"a chart with no font and no textColor must not carry a textStyle");
+
+		JsonNode inherited = option(barComponent(),
+			new EChartsOptionBuilder.ReportEnvironment(Locale.GERMANY, "DejaVu Sans", 11f))
+			.get("textStyle");
+		assertEquals("DejaVu Sans", inherited.get("fontFamily").asText(),
+			"the chart must use the report's font, not the ECharts default face");
+		assertEquals(11.0, inherited.get("fontSize").asDouble(), 0.001);
+	}
+
+	@Test
+	void explicitFontWinsOverTheReportStyle() throws Exception
+	{
+		ChartComponent component = barComponent();
+		component.setFontName("Courier New");
+
+		JsonNode textStyle = option(component,
+			new EChartsOptionBuilder.ReportEnvironment(Locale.GERMANY, "DejaVu Sans", 11f))
+			.get("textStyle");
+		assertEquals("Courier New", textStyle.get("fontFamily").asText());
+	}
+
+	@Test
+	void textColorReplacesTheHardCodedLabelColour() throws Exception
+	{
+		// value labels are the site that carries the colour on a bar chart
+		ChartComponent labelled = barComponent();
+		labelled.setShowValues(Boolean.TRUE);
+		assertTrue(option(labelled, Locale.GERMANY).toString().contains("#333"),
+			"the default label colour is unchanged");
+
+		ChartComponent component = barComponent();
+		component.setShowValues(Boolean.TRUE);
+		component.setTextColor("#f5f5f5");
+		JsonNode light = option(component, Locale.GERMANY);
+
+		assertEquals("#f5f5f5", light.get("textStyle").get("color").asText(),
+			"an explicit textColor must also drive title/legend/axis text");
+		assertFalse(light.toString().contains("#333"),
+			"no label may keep the hard-coded colour: " + light);
 	}
 
 	@Test
