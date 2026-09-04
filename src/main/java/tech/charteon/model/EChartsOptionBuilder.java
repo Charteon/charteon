@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,6 +53,8 @@ import tech.charteon.component.ChartTypeEnum;
  */
 public final class EChartsOptionBuilder
 {
+	private static final Log log = LogFactory.getLog(EChartsOptionBuilder.class);
+
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	/**
@@ -78,6 +83,33 @@ public final class EChartsOptionBuilder
 	 * a chart with more series than slots cycles, which is why more than eight
 	 * series should be grouped instead (see the chart reference).
 	 */
+	/**
+	 * Cap on a single bar's thickness, in pixels. Without it a chart with few
+	 * categories in a wide element renders bars several hundred pixels wide.
+	 */
+	private static final int BAR_MAX_WIDTH = 72;
+
+	/** Vertical room the bottom legend strip occupies, in pixels. */
+	private static final int LEGEND_STRIP_HEIGHT = 26;
+
+	/**
+	 * The default sequential ramp for magnitude scales (heatmap, map), light to
+	 * dark in a single hue anchored on palette slot 1.
+	 *
+	 * <p>
+	 * The ECharts default ramp starts at {@code #d4dcf7}, which is 1.37:1
+	 * against white paper - the bottom third of the scale is invisible once the
+	 * report is printed. It is also a different blue from the categorical slot,
+	 * so a report showing a bar chart next to a heatmap showed two blues. This
+	 * ramp starts at 2.11:1 and ends at 8.10:1, and its lightness decreases
+	 * monotonically, which is what makes a sequential scale readable.
+	 */
+	private static final String[] SEQUENTIAL_RAMP = {
+		"#86b6ef",
+		"#2a78d6",
+		"#184f95",
+	};
+
 	private static final String[] DEFAULT_PALETTE = {
 		"#2a78d6", // blue
 		"#eb6834", // orange
@@ -410,6 +442,17 @@ public final class EChartsOptionBuilder
 		ObjectNode legend = option.putObject("legend");
 		legend.put("show", show);
 		legend.put("bottom", 0);
+		// A report element has a fixed height: a legend that grows upwards eats
+		// the plot and is then clipped, with no way for the reader to scroll.
+		// Paging keeps it to one strip whatever the series count.
+		legend.put("type", "scroll");
+
+		if (show && option.has("visualMap"))
+		{
+			// Both used to sit at bottom 0 and drew on top of each other; the
+			// legend keeps the edge, the colour scale moves up by its height.
+			((ObjectNode) option.get("visualMap")).put("bottom", LEGEND_STRIP_HEIGHT);
+		}
 	}
 
 	/**
@@ -422,6 +465,7 @@ public final class EChartsOptionBuilder
 	{
 		if (settings.colors() == null)
 		{
+			warnIfPaletteCycles(option, DEFAULT_PALETTE.length);
 			// A theme brings its own palette - overriding it here would make
 			// the theme attribute pointless. Only the un-themed default is ours.
 			if (settings.theme() == null)
@@ -442,6 +486,26 @@ public final class EChartsOptionBuilder
 			{
 				palette.add(trimmed);
 			}
+		}
+		warnIfPaletteCycles(option, palette.size());
+	}
+
+	/**
+	 * Warns when the chart has more series than the palette has slots. ECharts
+	 * then reuses hue 1 for series {@code slots + 1}, so two series carry the
+	 * same colour while the legend claims they differ - a chart that quietly
+	 * lies. Nothing can be fixed at render time (the report decides how many
+	 * series there are), but whoever builds the report should hear about it.
+	 */
+	private static void warnIfPaletteCycles(ObjectNode option, int slots)
+	{
+		int seriesCount = option.has("series") ? option.get("series").size() : 0;
+		if (slots > 0 && seriesCount > slots && log.isWarnEnabled())
+		{
+			log.warn("Charteon: chart has " + seriesCount + " series but the palette has only "
+				+ slots + " colours - series " + (slots + 1) + " onwards repeat the earlier"
+				+ " hues and cannot be told apart. Group the smaller series into an \"other\""
+				+ " series, split the chart, or extend the 'colors' attribute.");
 		}
 	}
 
@@ -687,6 +751,13 @@ public final class EChartsOptionBuilder
 
 	private static void applyLineBarVariants(ObjectNode seriesNode, Settings settings)
 	{
+		if ("bar".equals(seriesNode.path("type").asText()))
+		{
+			// ECharts sizes a bar to its share of the category band, so a chart
+			// with two categories in a wide report element drew 450px-wide bars.
+			// A cap keeps the bar a bar instead of a colour field.
+			seriesNode.put("barMaxWidth", BAR_MAX_WIDTH);
+		}
 		if (settings.showValues())
 		{
 			addValueLabel(seriesNode, settings);
@@ -1623,6 +1694,11 @@ public final class EChartsOptionBuilder
 		{
 			visualMap.put("min", 0);
 			visualMap.put("max", 1);
+		}
+		ArrayNode inRange = visualMap.putObject("inRange").putArray("color");
+		for (String step : SEQUENTIAL_RAMP)
+		{
+			inRange.add(step);
 		}
 		visualMap.put("calculable", false);
 		visualMap.put("orient", "horizontal");

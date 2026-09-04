@@ -71,6 +71,17 @@ keeps its color across reports and across a filter that changes how many
 series there are. With more than eight series the palette cycles - group the
 tail into an "other" series instead, or the chart stops being readable.
 
+More than eight series makes the palette cycle — series 9 gets the colour of
+series 1 — and Charteon logs a warning when that happens. Group the tail into
+an "other" series or split the chart; there is no ninth colour that would be
+both distinct and legible.
+
+Magnitude scales (heatmap, map) use a separate sequential ramp,
+`#86b6ef → #2a78d6 → #184f95`: one hue, monotonically darker, anchored on the
+first categorical slot so a heatmap and a bar chart in the same report show the
+same blue. Its light end stays at 2.11:1 against paper, where the ECharts
+default started at 1.37:1 and vanished in print.
+
 The palette is chosen for the trip a report makes rather than for a screen:
 its slots keep a lightness spread and stay separable under simulated
 red/green/blue color-vision deficiency. The ECharts stock palette does not -

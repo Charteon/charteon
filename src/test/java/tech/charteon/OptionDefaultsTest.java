@@ -190,6 +190,84 @@ public class OptionDefaultsTest
 	}
 
 	@Test
+	void barsAreCappedSoFewCategoriesDoNotProduceColourFields() throws Exception
+	{
+		JsonNode series = option(barComponent(), Locale.GERMANY).get("series").get(0);
+		assertTrue(series.has("barMaxWidth"),
+			"an uncapped bar grows to its share of the category band: " + series);
+		assertTrue(series.get("barMaxWidth").asInt() > 0 && series.get("barMaxWidth").asInt() <= 120,
+			"cap must be a sane bar thickness");
+	}
+
+	@Test
+	void lineSeriesGetNoBarCap() throws Exception
+	{
+		ChartComponent component = new ChartComponent();
+		component.setChartType(ChartTypeEnum.LINE);
+		assertFalse(option(component, Locale.GERMANY).get("series").get(0).has("barMaxWidth"));
+	}
+
+	@Test
+	void legendPagesInsteadOfGrowingIntoThePlot() throws Exception
+	{
+		JsonNode legend = option(barComponent(), Locale.GERMANY).get("legend");
+		assertEquals("scroll", legend.get("type").asText(),
+			"a report element cannot scroll, so the legend must page itself");
+	}
+
+	@Test
+	void sequentialRampIsSingleHueAndPrintable() throws Exception
+	{
+		ChartComponent component = new ChartComponent();
+		component.setChartType(ChartTypeEnum.HEATMAP);
+		JsonNode ramp = option(component, Locale.GERMANY).get("visualMap").get("inRange").get("color");
+
+		assertTrue(ramp != null && ramp.size() >= 3, "a magnitude scale needs an explicit ramp");
+
+		double previous = Double.MAX_VALUE;
+		for (JsonNode step : ramp)
+		{
+			double luminance = relativeLuminance(step.asText());
+			assertTrue(luminance < previous,
+				"the ramp must get monotonically darker, broke at " + step.asText());
+			previous = luminance;
+		}
+		assertTrue(contrastAgainstWhite(ramp.get(0).asText()) >= 2.0,
+			"the light end must stay visible on paper, was "
+				+ contrastAgainstWhite(ramp.get(0).asText()) + ":1");
+	}
+
+	@Test
+	void colourScaleAndLegendDoNotShareTheBottomEdge() throws Exception
+	{
+		ChartComponent component = new ChartComponent();
+		component.setChartType(ChartTypeEnum.HEATMAP);
+		component.setShowLegend(Boolean.TRUE);
+		JsonNode option = option(component, Locale.GERMANY);
+
+		assertEquals(0, option.get("legend").get("bottom").asInt());
+		assertTrue(option.get("visualMap").get("bottom").asInt() > 0,
+			"the colour scale must move up when a legend claims the bottom edge");
+	}
+
+	private static double relativeLuminance(String hex)
+	{
+		String h = hex.substring(1);
+		double[] channel = new double[3];
+		for (int i = 0; i < 3; i++)
+		{
+			double v = Integer.parseInt(h.substring(i * 2, i * 2 + 2), 16) / 255.0;
+			channel[i] = v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+		}
+		return 0.2126 * channel[0] + 0.7152 * channel[1] + 0.0722 * channel[2];
+	}
+
+	private static double contrastAgainstWhite(String hex)
+	{
+		return 1.05 / (relativeLuminance(hex) + 0.05);
+	}
+
+	@Test
 	void defaultPaletteSlotsAreDistinct()
 	{
 		ChartComponent component = barComponent();

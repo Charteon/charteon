@@ -8,6 +8,19 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **Bars are capped at 72px.** ECharts sizes a bar to its share of the category
+  band, so a two-category chart in a 640px-wide element drew 156px-wide bars —
+  a colour field rather than a bar. Line series are unaffected.
+- **The legend pages instead of growing into the plot.** It is now
+  `type: "scroll"`. A report element has a fixed height, so a legend that grew
+  upwards ate the plot area and was then clipped, with no way for the reader to
+  scroll it.
+- **Magnitude scales use an explicit sequential ramp.** Heatmap and map
+  inherited the ECharts default, whose light end is 1.37:1 against white paper —
+  the bottom third of every scale disappeared in print — and whose blue was a
+  different blue from palette slot 1. The ramp is now `#86b6ef → #2a78d6 →
+  #184f95`, anchored on the categorical slot, monotonically darker, starting at
+  2.11:1 and ending at 8.10:1.
 - **Charts have a default color palette.** Without `colors` and without a
   `theme`, charts used the ECharts stock palette, which is tuned for screens:
   five of its nine hues sit below a 3:1 contrast ratio against paper, its
@@ -28,8 +41,19 @@ adheres to [Semantic Versioning](https://semver.org/).
   `1.234,56`. They now default to the separators of the locale the report is
   filled with; setting them explicitly still overrides that.
 
+### Fixed
+
+- **The colour scale no longer sits on top of the legend.** `visualMap` and
+  `legend` were both placed at `bottom: 0`; with `showLegend="true"` on a
+  heatmap or map they drew over each other. The legend keeps the edge and the
+  colour scale moves up by its height.
+
 ### Added
 
+- **A warning when the palette cycles.** With more series than palette slots,
+  ECharts silently reuses hue 1 for series 9, so two series share a colour
+  while the legend claims they differ. Nothing can be fixed at render time, but
+  the build now logs a warning naming the series count and the alternatives.
 - **`textColor`, `fontName` and `fontSize` attributes.** The label colour was
   the literal `#333` at seven places in the option builder — needed because SSR
   otherwise inherits white, but unreachable except through `optionExpression`,
