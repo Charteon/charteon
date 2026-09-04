@@ -174,7 +174,8 @@ type:
 | `valueFormat="#,##0.00 €"` | bar, line, pie | number format for value axis + labels + tooltip (see below) |
 | `groupingSeparator` / `decimalSeparator` | bar, line, pie | separators for `valueFormat` (e.g. `.` / `,` for German) |
 | `xAxisTitle` / `yAxisTitle` / `secondaryAxisTitle` | bar, line | axis titles |
-| `colors="#5470c6,#91cc75,…"` | all | color palette (comma-separated); cycled across series / categories |
+| `colors="#2a78d6,#eb6834,…"` | all | color palette (comma-separated); cycled across series / categories. Unset, the built-in print-safe palette is used |
+| `decal="true"` | all | texture per series on top of its color, for black-and-white printing and color-vision deficiency |
 | `colorByCategory="true"` | bar (pie/funnel do it by default) | each category its own palette color (e.g. every bar different) |
 
 Per **series** (inside a `<series>` of a `categoryDataset`):
@@ -193,7 +194,7 @@ funnel steps, sankey nodes, bars, lines, …), not just one type:
 
 ```xml
 <component kind="chart" chartType="bar" horizontal="true"
-           colors="#5470c6,#91cc75,#fac858,#ee6666,#73c0de"
+           colors="#2a78d6,#eb6834,#1baf7a,#eda100,#e87ba4"
            colorByCategory="true">   <!-- every bar a different palette color -->
 ```
 

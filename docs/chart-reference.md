@@ -35,10 +35,38 @@ band:
 | `mapName` | string | map | registered GeoJSON map, default `world` |
 | `graphLayout` | `circular`/`force`/`none` | graph | layout, default `circular` |
 | `valueFormat` | string | bar, line, pie | number format for value axis + value labels + tooltip, e.g. `#,##0.00 €` |
-| `groupingSeparator` / `decimalSeparator` | string | bar, line, pie | separators for `valueFormat` (default `,` / `.`; German: `.` / `,`) |
+| `groupingSeparator` / `decimalSeparator` | string | bar, line, pie | separators for `valueFormat`. Default: **the report locale's** separators, so a chart in a German report prints `1.234,56` like the report around it. Set them only to override that. |
 | `xAxisTitle` / `yAxisTitle` / `secondaryAxisTitle` | string | bar, line | axis titles |
-| `colors` | string | all | color palette, comma-separated (e.g. `#5470c6,#91cc75`); applied globally |
+| `colors` | string | all | color palette, comma-separated (e.g. `#2a78d6,#eb6834`); applied globally. Unset, the built-in palette is used (see below) - unless a `theme` is set, which brings its own. |
+| `decal` | boolean | all | adds a texture per series on top of its color (ECharts `aria.decal`). Off by default. |
 | `colorByCategory` | boolean | bar (pie/funnel default) | color by data item instead of by series |
+
+### Colors, print and readability
+
+Charts without `colors` and without a `theme` use Charteon's built-in
+categorical palette, in this fixed order:
+
+| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|
+| `#2a78d6` | `#eb6834` | `#1baf7a` | `#eda100` | `#e87ba4` | `#008300` | `#4a3aa7` | `#e34948` |
+
+The order is fixed on purpose: slot 1 is always the same blue, so a series
+keeps its color across reports and across a filter that changes how many
+series there are. With more than eight series the palette cycles - group the
+tail into an "other" series instead, or the chart stops being readable.
+
+The palette is chosen for the trip a report makes rather than for a screen:
+its slots keep a lightness spread and stay separable under simulated
+red/green/blue color-vision deficiency. The ECharts stock palette does not -
+five of its nine hues fall below a 3:1 contrast ratio against white paper.
+
+For output that is printed or photocopied in black and white, or that has to
+work without any color at all, set `decal="true"`. Each series then also gets
+a texture, so identity survives when the hue does not. Textures are off by
+default because they visibly change every fill.
+
+`aria` is always enabled: the exported SVG carries a generated description of
+the chart, which is what an accessible PDF needs.
 
 Per-series attributes (on a `<series>` of the `categoryDataset`):
 

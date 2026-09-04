@@ -17,7 +17,9 @@
  */
 package tech.charteon.model;
 
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,6 +53,36 @@ public final class EChartsOptionBuilder
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	/**
+	 * The default categorical palette, used when the report sets neither
+	 * {@code colors} nor a {@code theme}.
+	 *
+	 * <p>
+	 * The ECharts stock palette is tuned for screens on a white page and does
+	 * not survive the trip a report makes: five of its nine hues stay below a
+	 * 3:1 contrast ratio against the paper, its yellow/green pair is barely
+	 * separable even with full colour vision, and its orange/green pair
+	 * collapses under the most common form of colour blindness. Reports get
+	 * printed, photocopied and archived in greyscale, so the default is a
+	 * palette whose slots keep a lightness spread and stay distinguishable
+	 * under simulated protanopia/deuteranopia/tritanopia.
+	 *
+	 * <p>
+	 * Hues are assigned to series in this fixed order and never re-generated:
+	 * a chart with more series than slots cycles, which is why more than eight
+	 * series should be grouped instead (see the chart reference).
+	 */
+	private static final String[] DEFAULT_PALETTE = {
+		"#2a78d6", // blue
+		"#eb6834", // orange
+		"#1baf7a", // aqua
+		"#eda100", // yellow
+		"#e87ba4", // magenta
+		"#008300", // green
+		"#4a3aa7", // violet
+		"#e34948", // red
+	};
+
+	/**
 	 * The effective, alias-normalized chart settings.
 	 */
 	private record Settings(
@@ -74,7 +106,9 @@ public final class EChartsOptionBuilder
 		String yAxisTitle,
 		String secondaryAxisTitle,
 		String colors,
-		boolean colorByCategory)
+		boolean colorByCategory,
+		String theme,
+		boolean decal)
 	{
 	}
 
@@ -89,10 +123,30 @@ public final class EChartsOptionBuilder
 		ChartData data,
 		String rawOptionJson)
 	{
+		return buildOption(component, title, subtitle, data, rawOptionJson, null);
+	}
+
+	/**
+	 * Builds the option for a report being filled with {@code locale}. The
+	 * locale supplies the number separators the component does not set
+	 * explicitly, so a chart in a German report formats its axis labels and
+	 * tooltips as {@code 1.234,56} like the rest of the report, not as
+	 * {@code 1,234.56}.
+	 *
+	 * @param locale the report locale, or {@code null} for the JVM default
+	 */
+	public static String buildOption(
+		ChartComponent component,
+		String title,
+		String subtitle,
+		ChartData data,
+		String rawOptionJson,
+		Locale locale)
+	{
 		try
 		{
 			ObjectNode option = MAPPER.createObjectNode();
-			Settings settings = normalize(component);
+			Settings settings = normalize(component, locale);
 			if (data == null)
 			{
 				data = ChartData.EMPTY;
@@ -136,6 +190,7 @@ public final class EChartsOptionBuilder
 			}
 			addLegend(option, settings.type(), component.getShowLegend());
 			addColorPalette(option, settings);
+			addAria(option, settings);
 
 			if (rawOptionJson != null && !rawOptionJson.isBlank())
 			{
@@ -161,7 +216,7 @@ public final class EChartsOptionBuilder
 	 * Resolves the pre-v2 variant type aliases into base type + implied
 	 * property and applies the component's variant properties.
 	 */
-	private static Settings normalize(ChartComponent component)
+	private static Settings normalize(ChartComponent component, Locale locale)
 	{
 		ChartTypeEnum declared = component.getChartType();
 		ChartTypeEnum base = declared == null ? null : declared.getBaseType();
@@ -191,18 +246,44 @@ public final class EChartsOptionBuilder
 			component.getMapName() == null ? "world" : component.getMapName(),
 			component.getGraphLayout() == null ? "circular" : component.getGraphLayout(),
 			blankToNull(component.getValueFormat()),
-			component.getGroupingSeparator() == null ? "," : component.getGroupingSeparator(),
-			component.getDecimalSeparator() == null ? "." : component.getDecimalSeparator(),
+			component.getGroupingSeparator() == null
+				? localeGroupingSeparator(locale) : component.getGroupingSeparator(),
+			component.getDecimalSeparator() == null
+				? localeDecimalSeparator(locale) : component.getDecimalSeparator(),
 			blankToNull(component.getXAxisTitle()),
 			blankToNull(component.getYAxisTitle()),
 			blankToNull(component.getSecondaryAxisTitle()),
 			blankToNull(component.getColors()),
-			Boolean.TRUE.equals(component.getColorByCategory()));
+			Boolean.TRUE.equals(component.getColorByCategory()),
+			blankToNull(component.getTheme()),
+			Boolean.TRUE.equals(component.getDecal()));
 	}
 
 	private static String blankToNull(String value)
 	{
 		return value == null || value.isBlank() ? null : value;
+	}
+
+	/**
+	 * The grouping separator of {@code locale} (JVM default when {@code null}),
+	 * as a string. A non-breaking space - which several locales, French among
+	 * them, use - is kept as-is; it is what the rest of the report prints too.
+	 */
+	private static String localeGroupingSeparator(Locale locale)
+	{
+		DecimalFormatSymbols symbols = locale == null
+			? DecimalFormatSymbols.getInstance()
+			: DecimalFormatSymbols.getInstance(locale);
+		return String.valueOf(symbols.getGroupingSeparator());
+	}
+
+	/** The decimal separator of {@code locale} (JVM default when {@code null}). */
+	private static String localeDecimalSeparator(Locale locale)
+	{
+		DecimalFormatSymbols symbols = locale == null
+			? DecimalFormatSymbols.getInstance()
+			: DecimalFormatSymbols.getInstance(locale);
+		return String.valueOf(symbols.getDecimalSeparator());
 	}
 
 	private static void addTitle(ObjectNode option, String title, String subtitle)
@@ -308,6 +389,16 @@ public final class EChartsOptionBuilder
 	{
 		if (settings.colors() == null)
 		{
+			// A theme brings its own palette - overriding it here would make
+			// the theme attribute pointless. Only the un-themed default is ours.
+			if (settings.theme() == null)
+			{
+				ArrayNode palette = option.putArray("color");
+				for (String color : DEFAULT_PALETTE)
+				{
+					palette.add(color);
+				}
+			}
 			return;
 		}
 		ArrayNode palette = option.putArray("color");
@@ -319,6 +410,25 @@ public final class EChartsOptionBuilder
 				palette.add(trimmed);
 			}
 		}
+	}
+
+	/**
+	 * Enables the ECharts accessibility layer: a generated description of the
+	 * chart (which ends up in the SVG and therefore in the exported document),
+	 * and - when {@code decal} is set - a texture per series.
+	 *
+	 * <p>
+	 * Decals are the second encoding that makes a chart survive the two things
+	 * a report routinely goes through and a dashboard does not: being read by
+	 * someone who cannot separate the hues, and being printed or photocopied in
+	 * black and white. They are opt-in because they visibly change the fill of
+	 * every existing chart.
+	 */
+	private static void addAria(ObjectNode option, Settings settings)
+	{
+		ObjectNode aria = option.putObject("aria");
+		aria.put("enabled", true);
+		aria.putObject("decal").put("show", settings.decal());
 	}
 
 	private static void buildCategoryOption(

@@ -76,6 +76,7 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
 	"graphLayout",
 	"colors",
 	"colorByCategory",
+	"decal",
 	"valueFormat",
 	"groupingSeparator",
 	"decimalSeparator",
@@ -144,6 +145,7 @@ public class ChartComponent implements ContextAwareComponent, JRCloneable, Seria
 	private String graphLayout;
 	private String colors;
 	private Boolean colorByCategory;
+	private Boolean decal;
 	private String valueFormat;
 	private String groupingSeparator;
 	private String decimalSeparator;
@@ -188,6 +190,7 @@ public class ChartComponent implements ContextAwareComponent, JRCloneable, Seria
 		this.graphLayout = component.getGraphLayout();
 		this.colors = component.getColors();
 		this.colorByCategory = component.getColorByCategory();
+		this.decal = component.getDecal();
 		this.valueFormat = component.getValueFormat();
 		this.groupingSeparator = component.getGroupingSeparator();
 		this.decimalSeparator = component.getDecimalSeparator();
@@ -502,6 +505,29 @@ public class ChartComponent implements ContextAwareComponent, JRCloneable, Seria
 	public void setColorByCategory(Boolean colorByCategory)
 	{
 		this.colorByCategory = colorByCategory;
+	}
+
+	/**
+	 * Whether each series additionally gets a texture (ECharts
+	 * {@code aria.decal}) on top of its palette color. {@code null}/false is
+	 * the default, because decals visibly change the fill of every chart.
+	 *
+	 * <p>
+	 * Switch this on for reports that get printed or photocopied in black and
+	 * white, or that must stay readable for readers with a color vision
+	 * deficiency: the texture carries the series identity where the hue no
+	 * longer can.
+	 */
+	@JsonInclude(Include.NON_NULL)
+	@JacksonXmlProperty(isAttribute = true)
+	public Boolean getDecal()
+	{
+		return decal;
+	}
+
+	public void setDecal(Boolean decal)
+	{
+		this.decal = decal;
 	}
 
 	/**
