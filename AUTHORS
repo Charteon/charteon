@@ -1,0 +1,28 @@
+Charteon — Authors
+==================
+
+Charteon is Copyright (C) 2026 The Charteon Authors.
+
+"The Charteon Authors" is the collective name used in the source headers and in
+NOTICE for everyone who has contributed to this project. Copyright in each
+contribution remains with its respective author; contributions are made under
+the project license (GNU Lesser General Public License, version 3 — see
+LICENSE).
+
+Original author and maintainer
+------------------------------
+
+Thomas Haas <office@thomas-haas.me>
+
+Contributors
+------------
+
+None yet. See CONTRIBUTING.md if you would like to appear here — contributors
+are added to this file as part of merging their first contribution.
+
+Note
+----
+
+Third-party software that Charteon bundles or builds upon (Apache ECharts,
+GraalVM JavaScript / Truffle, Apache Batik, Natural Earth, JasperReports) is
+credited in NOTICE, not here.

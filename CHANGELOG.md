@@ -6,6 +6,23 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **License texts are now packaged into the JARs.** Both artifacts previously
+  shipped without any license file, although they distribute third-party code:
+  the thin JAR bundles Apache ECharts, the `all` JAR additionally bundles
+  GraalJS/Truffle (UPL-1.0) and Batik (Apache-2.0), and Charteon itself is
+  LGPLv3. Every JAR now carries `META-INF/LICENSE` (LGPLv3),
+  `META-INF/GPL-3.0.txt`, `META-INF/NOTICE` and the verbatim upstream texts in
+  `META-INF/licenses/` (`apache-2.0.txt`, `upl-1.0.txt`). In the shaded `all`
+  JAR the `ApacheLicenseResourceTransformer` deletes `META-INF/LICENSE`
+  (by design — it removes duplicates rather than keeping one) and the
+  `ApacheNoticeResourceTransformer` rewrites `META-INF/NOTICE`, so Charteon's
+  own texts are additionally included verbatim as
+  `META-INF/licenses/charteon-*`.
+- **`AUTHORS`** file, and the `<developers>` block in `pom.xml` that Maven
+  Central requires.
+
 ## [0.3.5] - 2026-08-29
 
 ### Changed

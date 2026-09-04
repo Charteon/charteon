@@ -27,6 +27,21 @@
         </license>
     </licenses>
 
+    <!--
+        Required by Maven Central (a POM without <developers> is rejected).
+        Keep in sync with the AUTHORS file.
+    -->
+    <developers>
+        <developer>
+            <name>Thomas Haas</name>
+            <email>office@thomas-haas.me</email>
+            <roles>
+                <role>author</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <scm>
         <connection>scm:git:https://github.com/charteon/charteon.git</connection>
         <developerConnection>scm:git:git@github.com:charteon/charteon.git</developerConnection>
@@ -159,6 +174,54 @@
                 <version>3.5.2</version>
             </plugin>
             <!--
+                Legal files go INTO the artifacts, not just into the repository:
+                every distributed JAR must carry the license of the software it
+                contains. The thin JAR already bundles Apache ECharts
+                (tech/charteon/echarts.min.js), the "all" JAR additionally
+                bundles GraalJS/Truffle (UPL) and Batik (Apache-2.0), and
+                Charteon itself is LGPLv3 - so all of those texts are packaged
+                here. Single source of truth: the files in the project root and
+                in licenses/ (no duplicated copies under src/).
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-legal-files</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                            <resources>
+                                <!-- Charteon's own license and attribution -->
+                                <resource>
+                                    <directory>${project.basedir}</directory>
+                                    <includes>
+                                        <include>LICENSE</include>
+                                        <include>NOTICE</include>
+                                        <include>GPL-3.0.txt</include>
+                                    </includes>
+                                    <filtering>false</filtering>
+                                </resource>
+                                <!-- Verbatim upstream texts of bundled third-party software -->
+                                <resource>
+                                    <directory>${project.basedir}/licenses</directory>
+                                    <targetPath>licenses</targetPath>
+                                    <excludes>
+                                        <exclude>README.md</exclude>
+                                    </excludes>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--
                 Packaging strategy:
                 - The main artifact (charteon-core-x.y.z.jar) is the "thin" JAR: only Charteon
                   classes and resources (incl. the bundled echarts.min.js). Dependencies
@@ -195,9 +258,30 @@
                                         <Multi-Release>true</Multi-Release>
                                     </manifestEntries>
                                 </transformer>
+                                <!-- Drops the duplicate META-INF/LICENSE files of the
+                                     Apache dependencies (it removes them, it does not
+                                     keep one) - which is why Charteon's own LGPLv3 text
+                                     is re-added verbatim below under a path this
+                                     transformer does not match. -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                                <!-- Merges the NOTICE files of all bundled Apache
+                                     artifacts into one META-INF/NOTICE. It reformats
+                                     what it merges, so Charteon's NOTICE is ALSO kept
+                                     verbatim below. -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
                                     <addHeader>false</addHeader>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                                    <file>${project.basedir}/LICENSE</file>
+                                    <resource>META-INF/licenses/charteon-lgpl-3.0.txt</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                                    <file>${project.basedir}/GPL-3.0.txt</file>
+                                    <resource>META-INF/licenses/charteon-gpl-3.0.txt</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                                    <file>${project.basedir}/NOTICE</file>
+                                    <resource>META-INF/licenses/charteon-NOTICE.txt</resource>
                                 </transformer>
                             </transformers>
                             <filters>
