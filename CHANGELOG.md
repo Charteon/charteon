@@ -17,6 +17,11 @@ adheres to [Semantic Versioning](https://semver.org/).
   palette that keeps a lightness spread and stays separable under simulated
   color-vision deficiency. `colors` still wins, and a `theme` keeps its own
   palette untouched.
+- **Charts inherit the report's font.** They drew their text in the ECharts
+  default face while the report around them used its own — two typefaces in one
+  page. `fontName`/`fontSize` now default to the chart element's style font
+  (resolved through the usual JasperReports style inheritance); setting either
+  attribute overrides it.
 - **Number separators follow the report locale.** `groupingSeparator` /
   `decimalSeparator` defaulted to `,` / `.` regardless of the report, so a
   chart in a German report printed `1,234.56` while the text around it printed
@@ -25,13 +30,17 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`textColor`, `fontName` and `fontSize` attributes.** The label colour was
+  the literal `#333` at seven places in the option builder — needed because SSR
+  otherwise inherits white, but unreachable except through `optionExpression`,
+  and wrong on a dark report background. It is now one constant behind
+  `textColor`; an explicit value also drives title, legend and axis text.
 - **`decal` attribute** — adds a texture per series (ECharts `aria.decal`) on
   top of the palette color, so series identity survives black-and-white
   printing and color-vision deficiency. Off by default, because it visibly
   changes every existing chart. The accessibility layer itself (`aria.enabled`,
   which puts a generated chart description into the exported SVG) is now always
   on.
-
 - **License texts are now packaged into the JARs.** Both artifacts previously
   shipped without any license file, although they distribute third-party code:
   the thin JAR bundles Apache ECharts, the `all` JAR additionally bundles

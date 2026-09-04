@@ -77,6 +77,9 @@ import net.sf.jasperreports.engine.util.JRCloneUtils;
 	"colors",
 	"colorByCategory",
 	"decal",
+	"textColor",
+	"fontName",
+	"fontSize",
 	"valueFormat",
 	"groupingSeparator",
 	"decimalSeparator",
@@ -146,6 +149,9 @@ public class ChartComponent implements ContextAwareComponent, JRCloneable, Seria
 	private String colors;
 	private Boolean colorByCategory;
 	private Boolean decal;
+	private String textColor;
+	private String fontName;
+	private Float fontSize;
 	private String valueFormat;
 	private String groupingSeparator;
 	private String decimalSeparator;
@@ -191,6 +197,9 @@ public class ChartComponent implements ContextAwareComponent, JRCloneable, Seria
 		this.colors = component.getColors();
 		this.colorByCategory = component.getColorByCategory();
 		this.decal = component.getDecal();
+		this.textColor = component.getTextColor();
+		this.fontName = component.getFontName();
+		this.fontSize = component.getFontSize();
 		this.valueFormat = component.getValueFormat();
 		this.groupingSeparator = component.getGroupingSeparator();
 		this.decimalSeparator = component.getDecimalSeparator();
@@ -528,6 +537,55 @@ public class ChartComponent implements ContextAwareComponent, JRCloneable, Seria
 	public void setDecal(Boolean decal)
 	{
 		this.decal = decal;
+	}
+
+	/**
+	 * Color of the chart's own text labels (the labels server-side rendering
+	 * would otherwise inherit white). {@code null} keeps the default
+	 * {@code #333}, which suits a light report background; set a light value
+	 * for a chart placed on a dark one. An explicit value is also applied to
+	 * the chart-wide {@code textStyle}, so title, legend and axis text follow.
+	 */
+	@JsonInclude(Include.NON_NULL)
+	@JacksonXmlProperty(isAttribute = true)
+	public String getTextColor()
+	{
+		return textColor;
+	}
+
+	public void setTextColor(String textColor)
+	{
+		this.textColor = textColor;
+	}
+
+	/**
+	 * Font family for the chart's text. {@code null} inherits the font of the
+	 * chart element's style, so the chart's text matches the report's text
+	 * instead of falling back to the ECharts default face.
+	 */
+	@JsonInclude(Include.NON_NULL)
+	@JacksonXmlProperty(isAttribute = true)
+	public String getFontName()
+	{
+		return fontName;
+	}
+
+	public void setFontName(String fontName)
+	{
+		this.fontName = fontName;
+	}
+
+	/** Font size for the chart's text; {@code null} inherits the element style's. */
+	@JsonInclude(Include.NON_NULL)
+	@JacksonXmlProperty(isAttribute = true)
+	public Float getFontSize()
+	{
+		return fontSize;
+	}
+
+	public void setFontSize(Float fontSize)
+	{
+		this.fontSize = fontSize;
 	}
 
 	/**

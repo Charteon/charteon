@@ -39,7 +39,23 @@ band:
 | `xAxisTitle` / `yAxisTitle` / `secondaryAxisTitle` | string | bar, line | axis titles |
 | `colors` | string | all | color palette, comma-separated (e.g. `#2a78d6,#eb6834`); applied globally. Unset, the built-in palette is used (see below) - unless a `theme` is set, which brings its own. |
 | `decal` | boolean | all | adds a texture per series on top of its color (ECharts `aria.decal`). Off by default. |
+| `textColor` | string | all | color of the chart's text labels. Default `#333` (suits a light page); set a light value for a chart on a dark background. An explicit value also drives title, legend and axis text. |
+| `fontName` / `fontSize` | string / float | all | font of the chart's text. Unset, **the chart element's style font is inherited**, so the chart matches the report instead of using the ECharts default face. |
 | `colorByCategory` | boolean | bar (pie/funnel default) | color by data item instead of by series |
+
+### A word on the dual axis
+
+`secondaryAxis` puts a series on its own value scale. It is supported because
+JasperReports users expect it, but be aware of what it does to the reader: with
+two independent scales, *where the two series cross carries no meaning* — it is
+an artifact of how each axis happens to be scaled, and shifting one axis moves
+the crossing anywhere you like. Readers reliably interpret it as a real
+relationship anyway.
+
+Prefer one of these when you can: two charts stacked above each other sharing
+the category axis, or both series indexed to a common base (e.g. first period =
+100) so they belong on one scale. Keep the dual axis for the case where the
+report is expected to look a specific way.
 
 ### Colors, print and readability
 
@@ -73,7 +89,7 @@ Per-series attributes (on a `<series>` of the `categoryDataset`):
 | Attribute | Applies to | Description |
 |---|---|---|
 | `seriesType` | bar, line | override the chart base type for this series (combo charts) |
-| `secondaryAxis` | bar, line | plot this series against a second value axis (dual axis) |
+| `secondaryAxis` | bar, line | plot this series against a second value axis (dual axis) — see the caveat below |
 | `color` | bar, line | fixed color for this series (e.g. `#2e7d32`) |
 
 Common child elements: `titleExpression`, `subtitleExpression`, exactly one

@@ -21,6 +21,7 @@ import net.sf.jasperreports.engine.JRComponentElement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.JRPrintElement;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.component.BaseFillComponent;
 import net.sf.jasperreports.engine.component.FillPrepareResult;
 import net.sf.jasperreports.engine.fill.JRFillObjectFactory;
@@ -178,10 +179,25 @@ public class ChartFillComponent extends BaseFillComponent
 			boxplotDataset == null ? null : boxplotDataset.getData(),
 			candlestickDataset == null ? null : candlestickDataset.getData());
 
-		// The report locale decides the number separators the component does
-		// not set itself, so the chart formats like the report around it.
+		// What the report contributes as defaults: its locale decides the number
+		// separators, its element style the font - so the chart formats and reads
+		// like the report around it instead of like a stock ECharts chart.
 		optionJson = EChartsOptionBuilder.buildOption(
-			component, title, subtitle, data, rawOption, fillContext.getReportLocale());
+			component, title, subtitle, data, rawOption, reportEnvironment());
+	}
+
+	/**
+	 * The report-side defaults handed to the option builder: locale and the
+	 * font of the chart element's style (the style is resolved through the
+	 * usual JasperReports inheritance, so a report-wide default style counts).
+	 */
+	private EChartsOptionBuilder.ReportEnvironment reportEnvironment()
+	{
+		JRStyle style = fillContext.getElementStyle();
+		return new EChartsOptionBuilder.ReportEnvironment(
+			fillContext.getReportLocale(),
+			style == null ? null : style.getFontName(),
+			style == null ? null : style.getFontSize());
 	}
 
 	private static String asString(Object value)
