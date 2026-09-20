@@ -56,10 +56,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- 17 statt 25: Bytecode bleibt in aelteren JVMs ladbar (z. B. Jaspersoft
-             Studio mit gebuendelter JRE, fuer das charteon-studio-Plugin); GraalJS
-             braucht zur LAUFZEIT weiterhin JDK >= 21 (dokumentiert). Tests laufen
-             unveraendert auf der lokalen JDK 25. -->
+        <!-- 17 rather than 25, so the bytecode stays loadable in older JVMs - such as
+             Jaspersoft Studio with its bundled JRE, which is what the charteon-studio
+             plug-in has to live in. GraalJS still needs JDK 21 or newer at RUNTIME
+             (documented). The tests run on the local JDK 25 either way. -->
         <maven.compiler.release>17</maven.compiler.release>
 
         <jasperreports.version>7.0.8</jasperreports.version>
@@ -163,6 +163,36 @@
 
     <build>
         <plugins>
+            <!--
+                A build that silently produces a broken artifact is worse than one that
+                refuses to start. Maven 3.9 is the floor because the build uses features
+                older versions ignore instead of failing on, and JDK 21 because that is
+                what GraalJS needs to run the tests - the compiler still targets 17 for
+                the shipped bytecode.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.6.2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-build-environment</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.9.0,)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[21,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
