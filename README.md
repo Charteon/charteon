@@ -330,6 +330,28 @@ produces `target/charteon-core-<version>.jar` (thin) and
 `target/charteon-core-<version>-all.jar` (bundled). See
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Support, and what you may rely on
+
+Charteon is written and maintained by one person, in the time that person has. It is used in
+earnest, it is kept working, and issues do get read — but there is **no company behind it, no
+support contract, and no promise that anything is answered within any particular time, or at
+all**. Nor is there a promise of a next release. Please plan as though the version you are
+using now is the last one you will get; if a later one arrives, treat it as a gift rather than
+as the plan.
+
+That is survivable, and deliberately so:
+
+- The **licence is LGPLv3**, so you may keep using, patching and shipping what is here whatever
+  happens to this project.
+- The **source is complete** — there is no hidden component, no service to call home to, and
+  nothing that stops working when a subscription lapses.
+- The **tests are the specification.** They say what each chart type produces, and they are the
+  thing to read first if you ever have to take this over.
+
+If Charteon matters to something you are paid to keep running, budget for owning it rather than
+for being supported. That is the honest arrangement, and saying so up front seems better than
+letting anyone find out at the wrong moment.
+
 ## License
 
 Charteon is licensed under the [GNU Lesser General Public License v3](LICENSE)
