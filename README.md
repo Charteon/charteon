@@ -2,7 +2,7 @@
 
 **Modern, interactive charts for JasperReports, powered by Apache ECharts.**
 
-![Build](https://img.shields.io/badge/build-passing-brightgreen) ![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg) ![Maven Central](https://img.shields.io/badge/maven--central-coming_soon-lightgrey)
+[![Build](https://github.com/Charteon/charteon/actions/workflows/build.yml/badge.svg)](https://github.com/Charteon/charteon/actions/workflows/build.yml) ![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg) ![Maven Central](https://img.shields.io/badge/maven--central-coming_soon-lightgrey)
 
 Charteon adds a chart component to the JasperReports Library that renders with
 [Apache ECharts](https://echarts.apache.org/) instead of JFreeChart — with the

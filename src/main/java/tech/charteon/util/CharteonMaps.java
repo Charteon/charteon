@@ -46,6 +46,24 @@ public final class CharteonMaps
 	private static final Map<String, String> REGISTERED = new ConcurrentHashMap<>();
 	private static final Map<String, String> RESOURCE_CACHE = new ConcurrentHashMap<>();
 
+	/**
+	 * How often each name has been re-registered.
+	 *
+	 * <p>
+	 * The renderer hands GeoJSON to a JavaScript context, and those contexts are
+	 * pooled and long-lived: whatever a context has registered, it keeps. Without
+	 * a way to tell one content from another, a {@link #register} that replaces a
+	 * map would reach only the contexts built afterwards - so the same chart would
+	 * draw the old outline or the new one depending on which context it happened
+	 * to get. That is the sort of fault that shows up as "sometimes".
+	 *
+	 * <p>
+	 * The revision travels with the GeoJSON and lets each context notice that what
+	 * it holds is stale. Names that come from a classpath resource never change and
+	 * stay at revision 0.
+	 */
+	private static final Map<String, Long> REVISIONS = new ConcurrentHashMap<>();
+
 	private CharteonMaps()
 	{
 	}
@@ -60,6 +78,25 @@ public final class CharteonMaps
 	public static void register(String name, String geoJson)
 	{
 		REGISTERED.put(name, geoJson);
+		REVISIONS.merge(name, 1L, Long::sum);
+	}
+
+	/**
+	 * Which revision of the named map is current.
+	 *
+	 * <p>
+	 * 0 means the content cannot change behind the caller's back - either the
+	 * name is unknown, or it resolves to a classpath resource. Every
+	 * {@link #register} of a name raises its revision by one, which is what tells
+	 * a renderer holding an older copy that it has to register the map again.
+	 */
+	public static long getRevision(String name)
+	{
+		if (name == null)
+		{
+			return 0L;
+		}
+		return REVISIONS.getOrDefault(name, 0L);
 	}
 
 	/**

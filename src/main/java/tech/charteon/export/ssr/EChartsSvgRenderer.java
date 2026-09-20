@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -49,6 +50,9 @@ public final class EChartsSvgRenderer
 
 	private static final int POOL_SIZE =
 		Math.max(1, Math.min(4, java.lang.Runtime.getRuntime().availableProcessors() / 2));
+
+	/** How long {@link #shutdown()} waits for renders in flight before closing anyway. */
+	private static final int SHUTDOWN_WAIT_SECONDS = 10;
 
 	/**
 	 * Bootstrapped GraalVM state: the shared engine (so parsed/compiled code is
@@ -174,9 +178,11 @@ public final class EChartsSvgRenderer
 		String mapName)
 	{
 		String mapGeoJson = null;
+		long mapRevision = 0L;
 		if (mapName != null)
 		{
 			mapGeoJson = CharteonMaps.getGeoJson(mapName);
+			mapRevision = CharteonMaps.getRevision(mapName);
 			if (mapGeoJson == null)
 			{
 				throw new JRRuntimeException("Charteon: no GeoJSON found for map \"" + mapName
@@ -199,7 +205,9 @@ public final class EChartsSvgRenderer
 				if (mapGeoJson != null)
 				{
 					Value registerMap = context.getBindings("js").getMember("__charteonRegisterMap");
-					registerMap.execute(mapName, mapGeoJson);
+					// The revision goes along so that a context still holding an
+					// earlier version of this map registers the new one.
+					registerMap.execute(mapName, mapGeoJson, mapRevision);
 				}
 				Value render = context.getBindings("js").getMember("__charteonRender");
 				Value svg = render.execute(optionJson, width, height, theme);
@@ -217,6 +225,86 @@ public final class EChartsSvgRenderer
 		finally
 		{
 			rt.permits.release();
+		}
+	}
+
+	/**
+	 * Releases the JavaScript runtime: every pooled context and the engine
+	 * behind them.
+	 *
+	 * <p>
+	 * Nothing here is reclaimed on its own. The engine and its contexts are
+	 * reachable from a static field, each context holds roughly a megabyte of
+	 * parsed ECharts, and all of it is anchored to the class loader of this
+	 * class. In a plain application that lives until the JVM exits and costs
+	 * nothing. In an OSGi host such as Jaspersoft Studio the bundle can be
+	 * stopped and started again while the JVM keeps running - and then the old
+	 * bundle's class loader cannot be collected, because Truffle still points at
+	 * it. That is the usual way a plug-in leaks a whole class loader per restart.
+	 *
+	 * <p>
+	 * So a bundle activator calls this from its {@code stop}. It is safe to call
+	 * more than once, safe to call when nothing was ever rendered, and a
+	 * {@link #renderSvg} afterwards simply builds the runtime again.
+	 *
+	 * <p>
+	 * A render in flight is waited for, briefly: whoever is rendering holds a
+	 * permit, and this waits for all of them. If a render does not finish within
+	 * that time the engine is closed anyway and the running script is cancelled -
+	 * a shutdown that can be blocked indefinitely by one stuck chart would be no
+	 * shutdown at all.
+	 */
+	public static void shutdown()
+	{
+		GraalRuntime local;
+		synchronized (EChartsSvgRenderer.class)
+		{
+			local = runtime;
+			runtime = null;
+			// A failure belonged to the runtime that has just been dropped; the
+			// next attempt deserves to be judged on its own.
+			initFailure = null;
+		}
+		if (local == null)
+		{
+			return;
+		}
+		try
+		{
+			// Whoever renders holds a permit, so holding all of them means nobody
+			// is. The result is deliberately not acted on: on a timeout we close
+			// anyway, and closing cancels what is still running.
+			local.permits.tryAcquire(POOL_SIZE, SHUTDOWN_WAIT_SECONDS, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException e)
+		{
+			Thread.currentThread().interrupt();
+		}
+		for (Context context = local.pool.poll(); context != null; context = local.pool.poll())
+		{
+			closeQuietly(context);
+		}
+		try
+		{
+			// true: cancel anything still executing. Closing the engine also
+			// closes contexts that a slow render has not handed back.
+			local.engine.close(true);
+		}
+		catch (RuntimeException alreadyGone)
+		{
+			// Closing twice, or closing what never opened, is not a failure here.
+		}
+	}
+
+	private static void closeQuietly(Context context)
+	{
+		try
+		{
+			context.close(true);
+		}
+		catch (RuntimeException alreadyGone)
+		{
+			// As above: shutdown reports nothing, it only releases.
 		}
 	}
 

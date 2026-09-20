@@ -1,0 +1,41 @@
+version: 2
+
+# Charteon links against GraalJS, Batik and PDFBox. All three publish security
+# fixes on their own schedule, and a chart library that renders untrusted
+# report input is exactly the place where an unpatched parser matters. The
+# point of this file is that nobody has to remember to look.
+updates:
+  - package-ecosystem: maven
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    groups:
+      # One pull request per family rather than one per artifact: Batik and
+      # GraalVM ship many artifacts that must move together anyway, and
+      # splitting them produces pull requests that cannot pass on their own.
+      graalvm:
+        patterns:
+          - "org.graalvm.*:*"
+      batik:
+        patterns:
+          - "org.apache.xmlgraphics:batik-*"
+      test-tooling:
+        patterns:
+          - "org.junit*:*"
+          - "org.apache.pdfbox:*"
+    ignore:
+      # JasperReports is a provided-scope dependency: Charteon has to keep
+      # compiling against the version its users already have, so it is raised
+      # deliberately and not by a bot.
+      - dependency-name: "net.sf.jasperreports:*"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci"

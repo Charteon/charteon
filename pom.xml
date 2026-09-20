@@ -56,6 +56,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--
+            Reproducible builds: without a fixed timestamp every jar entry carries the
+            moment it was packed, so two builds of the same commit differ byte for byte
+            and neither a checksum nor a signature can tell "rebuilt" from "tampered
+            with". Maven stamps the entries with this value instead. Raise it when the
+            release is cut; it only has to be a date, not the date.
+            https://maven.apache.org/guides/mini/guide-reproducible-builds.html
+        -->
+        <project.build.outputTimestamp>2026-09-20T00:00:00Z</project.build.outputTimestamp>
         <!-- 17 rather than 25, so the bytecode stays loadable in older JVMs - such as
              Jaspersoft Studio with its bundled JRE, which is what the charteon-studio
              plug-in has to live in. GraalJS still needs JDK 21 or newer at RUNTIME
@@ -260,6 +270,29 @@
                 - The attached "all" artifact (classifier "all") additionally bundles GraalJS
                   and Batik (but NEVER JasperReports itself, which stays provided).
             -->
+            <!--
+                The module name, declared rather than guessed. Without it the JVM
+                derives an automatic module name from the FILE NAME, so Charteon would
+                be "charteon.core" in one release and something else the moment the
+                artifact is renamed or versioned differently - and a module name is
+                part of the API for anyone with a module-info requiring it.
+                The shaded -all jar deliberately does not get one: it bundles GraalVM
+                and Batik and exists for the classpath (the Jaspersoft Studio plug-in),
+                not for the module path.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>tech.charteon.core</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

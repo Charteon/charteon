@@ -1,0 +1,59 @@
+name: Build
+
+# The point of this workflow is that the tests run somewhere other than the
+# author's machine, on every change, before anything is released. Until it
+# existed the only build that ran in CI was the publish one - and that one
+# passes -DskipTests.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # A newer push to the same branch makes the running build pointless.
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 21 is the minimum the enforcer allows and the minimum GraalJS needs at
+        # runtime; 25 is what the release is built with. Both are checked,
+        # because "it compiles here" is the mistake this workflow exists to
+        # prevent. The bytecode target stays 17 either way (see the pom).
+        java: ['21', '25']
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Build and test
+        # Headless: the export tests rasterise through Batik and AWT, and a CI
+        # runner has no display. Without this they fail with HeadlessException
+        # rather than with anything informative.
+        run: bash ./mvnw -B -Djava.awt.headless=true verify
+
+      - name: Keep the test output
+        # The export tests write real PDFs, SVGs and spreadsheets. When one
+        # fails, the artefact is what makes the failure readable.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output-jdk${{ matrix.java }}
+          path: |
+            target/test-output/
+            target/surefire-reports/
+          retention-days: 7
+          if-no-files-found: ignore

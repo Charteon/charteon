@@ -51,12 +51,17 @@
     }
     global.__charteonRevive = revive;
 
+    // Maps registered in this context, by name, with the revision of the content
+    // that was registered. This context is pooled and outlives any one chart, so
+    // "already seen" is not enough: a map re-registered on the Java side has to
+    // reach a context that still holds the previous content, or the same report
+    // would draw the old outline or the new one depending on which context it got.
     var registeredMaps = {};
 
-    global.__charteonRegisterMap = function (mapName, geoJson) {
-        if (!registeredMaps[mapName]) {
+    global.__charteonRegisterMap = function (mapName, geoJson, revision) {
+        if (registeredMaps[mapName] !== revision) {
             echarts.registerMap(mapName, JSON.parse(geoJson));
-            registeredMaps[mapName] = true;
+            registeredMaps[mapName] = revision;
         }
     };
 
