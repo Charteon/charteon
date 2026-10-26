@@ -73,7 +73,7 @@
         <maven.compiler.release>17</maven.compiler.release>
 
         <jasperreports.version>7.0.8</jasperreports.version>
-        <graaljs.version>25.3.4.1</graaljs.version>
+        <graaljs.version>25.4.4.1.1</graaljs.version>
         <batik.version>1.19</batik.version>
 
         <junit.version>6.1.3</junit.version>
